@@ -18,11 +18,11 @@ it is a major producer of oil and thus Outgassing.
 
 ## Intended Final Products
 
-Flex dashboard with interactive plots
+We plan on creating a website with:
 
-Heatmaps
-
-General descriptive statistics
+Page detailing statistical analyses conducted Interactive flex dashboard
+page showing trends over time Interactive map showing the locations of
+oil reserves in Pennsylvania Project Report
 
 ## Anticipated Data Sources
 
