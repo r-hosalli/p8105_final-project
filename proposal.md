@@ -6,10 +6,37 @@
 
 ## Motivation
 
+The motivation for this project is that climate change exists
+
 ## Intended Final Products
+
+Flex dashboard with interactive plots
+
+Heatmaps
+
+General descriptive statistics
 
 ## Anticipated Data Sources
 
+EPA
+
+Census
+
+EIA - US reserve
+
 ## Planned Analyses/Visualizations/Coding Challenges
 
+Descriptive statistics, interactive dashboard with maps
+
+Challenges: geo-spatial visualization, cleaning and merging three
+datasets
+
 ## Planned Timeline
+
+Nov 22rd: Data cleaned, introduction, data sources, motivation.
+
+Dec 2nd: All visualizations and near final website completed.
+
+Dec 7th: Screencast completed after finalizing website.
+
+Dec 10th: Complete Project submission with all report and webpage.
