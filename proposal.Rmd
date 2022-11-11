@@ -35,7 +35,9 @@ EIA - US reserve: https://www.eia.gov/naturalgas/crudeoilreserves/
 
 Descriptive statistics, interactive dashboard with maps
 
-Challenges: geo-spatial visualization, cleaning and merging three datasets
+We plan to perform basic descriptive statistics, plus regression analyses. We will display our results using interactive flex dashboards, and an interactive map.
+
+Anticipated challenges include cleaning and merging three separate datasets, along with geospatial visualization. We don't anticipate much issues with the basic descriptive analyses.
 
 ## Planned Timeline
 
