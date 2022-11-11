@@ -20,9 +20,14 @@ it is a major producer of oil and thus Outgassing.
 
 We plan on creating a website with:
 
-Page detailing statistical analyses conducted Interactive flex dashboard
-page showing trends over time Interactive map showing the locations of
-oil reserves in Pennsylvania Project Report
+-   Page detailing statistical analyses conducted
+
+-   Interactive flex dashboard page showing trends over time
+
+-   Interactive map showing the locations of oil reserves in
+    Pennsylvania
+
+-   Project Report
 
 ## Anticipated Data Sources
 
@@ -40,7 +45,6 @@ rates of low birthweight babies and asthma by county-level in
 Pennsylvania.
 
 EIA - US reserve: <https://www.eia.gov/naturalgas/crudeoilreserves/>
-\>\>\>\>\>\>\> API Key: d7452774862ac1dab86db559012f04ddec04365b
 
 EPA: <https://www.epa.gov/outdoor-air-quality-data/download-daily-data>
 
