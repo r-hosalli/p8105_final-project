@@ -8,6 +8,7 @@ output: github_document
 #### Vanessa Dinh (vd2407), Rahul Hosalli (rh3064), Armaan Sodhi (as6447), Mindy Tran (mnt2130)
 
 ## Motivation
+
 The motivation for this project is to evaluate the effects of outgassing on the local populations. Outgassing is the release of a gas that was dissolved, trapped, frozen, or absorbed in some material, potentially resulting in worsened air quality in the environment. The current literature has reported that outgassing has had negative health effects on the general population. In particular there is a focus on the effect of outgassings effect on potentially causing asthma and birthweight. There was particular interest made for the US State of Pennsylvania as it is a major producer of oil and thus Outgassing.
 
 ## Intended Final Products
@@ -20,21 +21,43 @@ General descriptive statistics
 
 ## Anticipated Data Sources
 
+<<<<<<< HEAD
 We plan on using three data sources, which are the US Energy Information Administration, the US Environmental Protection Agency, and the US Census. All data will be limited geographically to the county-level in Pennsylvania and for years 1980-2020, by decade. The US Energy Information Administration (EIA) has data on crude oil reserves/CO2 emissions that we will use as the exposure for the health outcomes we are observing, birthweight and asthma. The US Environmental Protection Agency has data on air quality, which would theoretically be a mediator for the association between CO2 emissions and the health outcomes of low birthweight and asthma. Lastly, we will use US Census data to get the rates of low birthweight babies and asthma by county-level in Pennsylvania.
 
 EIA - US reserve: https://www.eia.gov/naturalgas/crudeoilreserves/
 >>>>>>> API Key: 00d468c0ed5b094fb408ca8c34700314e45ebb29
 
 EPA: https://www.epa.gov/outdoor-air-quality-data/download-daily-data 
+=======
+We plan on using three data sources, which are the US Energy Information Administration, the US Environmental Protection Agency, and the US Census. All data will be limited geographically to the county-level in Pennsylvania and for years 1980-2020, by decade. The US Energy Information Administration (EIA) has data on CO2 emissions that we will use as the exposure for the health outcomes we are observing, birthweight and asthma. The US Environmental Protection Agency has data on air quality, which would theoretically be a mediator for the association between CO2 emissions and the health outcomes of low birthweight and asthma. Lastly, we will use US Census data to get the rates of low birthweight babies and asthma by county-level in Pennsylvania.
 
-Census: https://www.census.gov/quickfacts/PA 
+EPA: <https://www.epa.gov/outdoor-air-quality-data/download-daily-data>
+>>>>>>> d7452774862ac1dab86db559012f04ddec04365b
 
+Census: <https://www.census.gov/quickfacts/PA>
+
+<<<<<<< HEAD
+=======
+EIA - US reserve: <https://www.eia.gov/naturalgas/crudeoilreserves/>
+>>>>>>> d7452774862ac1dab86db559012f04ddec04365b
 
 ## Planned Analyses/Visualizations/Coding Challenges
 
-Descriptive statistics, interactive dashboard with maps
+We plan to perform basic descriptive statistics, plus regression analyses. We will display our results using interactive flex dashboards, and an interactive map.
 
-Challenges: geo-spatial visualization, cleaning and merging three datasets
+Planned Analyses:
+
+-   Change in oil reserves in trillion cubic feet or number of reserves in Pennsylvania state
+
+-   Asthma rates over time by county
+
+-   Distribution of Low Birth Weight by county over time
+
+-   Heatmaps to show where the oil reserves are located
+
+-   Association testing of oil reserve proximity and outcomes (asthma, low birth weight)
+
+Anticipated challenges include cleaning and merging three separate datasets, along with geospatial visualization. We don't anticipate much issues with the basic descriptive analyses. Association testing may be complicated.
 
 ## Planned Timeline
 
