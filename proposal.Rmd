@@ -33,7 +33,19 @@ EIA - US reserve: <https://www.eia.gov/naturalgas/crudeoilreserves/>
 
 We plan to perform basic descriptive statistics, plus regression analyses. We will display our results using interactive flex dashboards, and an interactive map.
 
-Anticipated challenges include cleaning and merging three separate datasets, along with geospatial visualization. We don't anticipate much issues with the basic descriptive analyses.
+Planned Analyses:
+
+-   Change in oil reserves in trillion cubic feet or number of reserves in Pennsylvania state
+
+-   Asthma rates over time by county
+
+-   Distribution of Low Birth Weight by county over time
+
+-   Heatmaps to show where the oil reserves are located
+
+-   Association testing of oil reserve proximity and outcomes (asthma, low birth weight)
+
+Anticipated challenges include cleaning and merging three separate datasets, along with geospatial visualization. We don't anticipate much issues with the basic descriptive analyses. Association testing may be complicated.
 
 ## Planned Timeline
 
