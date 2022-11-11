@@ -6,7 +6,15 @@
 
 ## Motivation
 
-The motivation for this project is that climate change exists
+The motivation for this project is to evaluate the effects of outgassing
+on the local populations. Outgassing is the release of a gas that was
+dissolved, trapped, frozen, or absorbed in some material, potentially
+resulting in worsened air quality in the environment. The current
+literature has reported that outgassing has had negative health effects
+on the general population. In particular there is a focus on the effect
+of outgassings effect on potentially causing asthma and birthweight.
+There was particular interest made for the US State of Pennsylvania as
+it is a major producer of oil and thus Outgassing.
 
 ## Intended Final Products
 
@@ -22,14 +30,21 @@ We plan on using three data sources, which are the US Energy Information
 Administration, the US Environmental Protection Agency, and the US
 Census. All data will be limited geographically to the county-level in
 Pennsylvania and for years 1980-2020, by decade. The US Energy
-Information Administration (EIA) has data on CO2 emissions that we will
-use as the exposure for the health outcomes we are observing,
-birthweight and asthma. The US Environmental Protection Agency has data
-on air quality, which would theoretically be a mediator for the
-association between CO2 emissions and the health outcomes of low
+Information Administration (EIA) has data on crude oil reserves/CO2
+emissions that we will use as the exposure for the health outcomes we
+are observing, birthweight and asthma. The US Environmental Protection
+Agency has data on air quality, which would theoretically be a mediator
+for the association between CO2 emissions and the health outcomes of low
 birthweight and asthma. Lastly, we will use US Census data to get the
 rates of low birthweight babies and asthma by county-level in
 Pennsylvania.
+
+EIA - US reserve: <https://www.eia.gov/naturalgas/crudeoilreserves/>
+\>\>\>\>\>\>\> API Key: 00d468c0ed5b094fb408ca8c34700314e45ebb29
+
+EPA: <https://www.epa.gov/outdoor-air-quality-data/download-daily-data>
+
+Census: <https://www.census.gov/quickfacts/PA>
 
 ## Planned Analyses/Visualizations/Coding Challenges
 
@@ -40,10 +55,11 @@ datasets
 
 ## Planned Timeline
 
-Nov 22rd: Data cleaned, introduction, data sources, motivation.
+Nov 22nd: All 3 datasets cleaned and tidied, written introduction to
+webpage that includes data sources and motivation for the project.
 
 Dec 2nd: All visualizations and near final website completed.
 
 Dec 7th: Screencast completed after finalizing website.
 
-Dec 10th: Complete Project submission with all report and webpage.
+Dec 10th: Complete project submission with finalized report and webpage.
