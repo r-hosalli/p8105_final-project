@@ -12,25 +12,22 @@ output: github_document
 The motivation for this project is to evaluate the effects of outgassing on the local populations. Outgassing is the release of a gas that was dissolved, trapped, frozen, or absorbed in some material, potentially resulting in worsened air quality in the environment. The current literature has reported that outgassing has had negative health effects on the general population. In particular there is a focus on the effect of outgassings effect on potentially causing asthma and birthweight. There was particular interest made for the US State of Pennsylvania as it is a major producer of oil and thus Outgassing.
 
 ## Intended Final Products
+
 We plan on creating a website with:
 
-Page detailing statistical analyses conducted
-Interactive flex dashboard page showing trends over time 
-Interactive map showing the locations of oil reserves in Pennsylvania
-Project Report
+-   Page detailing statistical analyses conducted Interactive flex dashboard page showing trends over time
 
+-   Interactive map showing the locations of oil reserves in Pennsylvania Project Report
 
 ## Anticipated Data Sources
 
 We plan on using three data sources, which are the US Energy Information Administration, the US Environmental Protection Agency, and the US Census. All data will be limited geographically to the county-level in Pennsylvania and for years 1980-2020, by decade. The US Energy Information Administration (EIA) has data on crude oil reserves/CO2 emissions that we will use as the exposure for the health outcomes we are observing, birthweight and asthma. The US Environmental Protection Agency has data on air quality, which would theoretically be a mediator for the association between CO2 emissions and the health outcomes of low birthweight and asthma. Lastly, we will use US Census data to get the rates of low birthweight babies and asthma by county-level in Pennsylvania.
 
 EIA - US reserve: <https://www.eia.gov/naturalgas/crudeoilreserves/>
->>>>>>> API Key: d7452774862ac1dab86db559012f04ddec04365b
 
 EPA: <https://www.epa.gov/outdoor-air-quality-data/download-daily-data>
 
 Census: <https://www.census.gov/quickfacts/PA>
-
 
 ## Planned Analyses/Visualizations/Coding Challenges
 
