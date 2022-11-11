@@ -26,11 +26,11 @@ General descriptive statistics
 
 ## Anticipated Data Sources
 
-EPA
+EPA: https://www.epa.gov/outdoor-air-quality-data/download-daily-data 
 
-Census
+Census: https://www.census.gov/quickfacts/PA 
 
-EIA - US reserve
+EIA - US reserve: https://www.eia.gov/naturalgas/crudeoilreserves/
 
 ## Planned Analyses/Visualizations/Coding Challenges
 
