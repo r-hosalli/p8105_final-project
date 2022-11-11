@@ -1,0 +1,6 @@
+---
+title: "proposal"
+author: "Rahul Hosalli"
+date: "`r Sys.Date()`"
+output: github_document
+---
