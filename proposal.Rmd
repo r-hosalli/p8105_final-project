@@ -15,11 +15,11 @@ The motivation for this project is to evaluate the effects of outgassing on the 
 
 We plan on creating a website with:
 
--   Page detailing statistical analyses conducted 
+-   Page detailing statistical analyses conducted
 
 -   Interactive flex dashboard page showing trends over time
 
--   Interactive map showing the locations of oil reserves in Pennsylvania 
+-   Interactive map showing the locations of oil reserves in Pennsylvania
 
 -   Project Report
 
