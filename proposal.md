@@ -40,7 +40,7 @@ rates of low birthweight babies and asthma by county-level in
 Pennsylvania.
 
 EIA - US reserve: <https://www.eia.gov/naturalgas/crudeoilreserves/>
-\>\>\>\>\>\>\> API Key: 00d468c0ed5b094fb408ca8c34700314e45ebb29
+\>\>\>\>\>\>\> API Key: d7452774862ac1dab86db559012f04ddec04365b
 
 EPA: <https://www.epa.gov/outdoor-air-quality-data/download-daily-data>
 
@@ -48,10 +48,28 @@ Census: <https://www.census.gov/quickfacts/PA>
 
 ## Planned Analyses/Visualizations/Coding Challenges
 
-Descriptive statistics, interactive dashboard with maps
+We plan to perform basic descriptive statistics, plus regression
+analyses. We will display our results using interactive flex dashboards,
+and an interactive map.
 
-Challenges: geo-spatial visualization, cleaning and merging three
-datasets
+Planned Analyses:
+
+-   Change in oil reserves in trillion cubic feet or number of reserves
+    in Pennsylvania state
+
+-   Asthma rates over time by county
+
+-   Distribution of Low Birth Weight by county over time
+
+-   Heatmaps to show where the oil reserves are located
+
+-   Association testing of oil reserve proximity and outcomes (asthma,
+    low birth weight)
+
+Anticipated challenges include cleaning and merging three separate
+datasets, along with geospatial visualization. We don’t anticipate much
+issues with the basic descriptive analyses. Association testing may be
+complicated.
 
 ## Planned Timeline
 
