@@ -1,0 +1,24 @@
+---
+title: "Data Cleaning"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+health_outcomes = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-state_abbr, -state_desc)
+```
+
+```{r}
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id, -state, -construction_completion_number, -site_listing_narrative, -site_progress_profile, -proposed_fr_notice, -listing_fr_notice, -noid_fr_notice, -deletion_fr_notice, -restoration_fr_notice_jumper_page, -x, -y, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")
+```
+
