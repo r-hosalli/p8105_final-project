@@ -1,0 +1,55 @@
+---
+title: "Exploratory Analyses"
+author: "Mindy Tran"
+date: "2022-12-07"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(patchwork)
+library(plotly)
+
+knitr::opts_chunk$set(echo = TRUE)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+```{r plot 1, message=FALSE, warning=FALSE}
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id, -state, -construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")
+
+superfund_by_county =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(n_superfund = n()) %>% 
+  mutate(
+    county = as.factor(county)) %>%
+  as.data.frame(superfund_by_county)
+
+ggplot(superfund_by_county,
+aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = county)) + 
+  geom_bar(stat = "identity") +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+    legend.position = "none") +
+   labs(
+    x = " ",
+    y = "Number of Superfundsites"
+  ) +
+  ggtitle("Pennsylvania: Number of Superfund Sites per County")
+   
+```
+  
