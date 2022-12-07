@@ -1,0 +1,92 @@
+---
+title: "Data Cleaning"
+author: "Vanessa Dinh"
+output: github_document
+---
+
+
+```{r}
+library(tidyverse)
+library(sf)
+library(tmap)
+library(tmaptools)
+```
+
+```{r}
+health_outcomes = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-state_abbr, -state_desc)
+  select(-state_abbr, -state_desc) %>% 
+  rename(county = county_name) %>% 
+  mutate(
+    county = as.factor(county)
+  ) %>% 
+  select(county, county_fips, total_population, starts_with("access2"), starts_with("binge"), starts_with("cancer"), starts_with("casthma"), starts_with("smoking"), starts_with("depression"), starts_with("lpa"), starts_with("mhlth"), starts_with("obesity"), geolocation
+  )
+str(health_outcomes)
+```
+
+```{r}
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id, -state, -construction_completion_number, -site_listing_narrative, -site_progress_profile, -proposed_fr_notice, -listing_fr_notice, -noid_fr_notice, -deletion_fr_notice, -restoration_fr_notice_jumper_page, -x, -y, -noid_date, -deletion_date) %>% 
+  select(-region_id, -state, -construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")
+sf_superfund = 
+  st_as_sf(superfund_sites, coords = c("longitude", "latitude"), crs = 4269)
+tm_shape(sf_superfund)+
+  tm_dots()
+st_crs(sf_superfund)
+```
+
+```{r}
+superfund_by_county =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(n_superfund = n()) %>% 
+  mutate(
+    county = as.factor(county)
+  )
+  
+str(superfund_by_county)
+```
+
+```{r}
+pa_county =
+  st_read("./data/PaCounty2022_11.shp") %>% 
+  janitor::clean_names() %>% 
+  rename(county = county_nam) %>% 
+  mutate(
+    county = str_to_title(county)
+) %>% 
+  select(county, fips_count, shape_leng, shape_area, geometry)
+tm_shape(pa_county) +
+  tm_polygons()
+```
+
+```{r}
+only_data =
+  left_join(health_outcomes, superfund_by_county, by = "county") %>% 
+  mutate_at(vars("n_superfund"), ~replace(., is.na(.), 0))
+pa_combined =
+  left_join(pa_county, only_data, by = "county")
+  
+```
+
+```{r}
+tm_shape(pa_county) +
+  tm_polygons(col = "grey90",
+              border.col = "white") + 
+tm_shape(sf_superfund) +
+  tm_dots(col = "brown",
+          alpha = 1)
+tm_shape(pa_combined) +
+  tm_polygons(col = "n_superfund",
+              style = "jenks",
+              n = 4,
+              palette = "YlOrBr",
+              border.col = "black",
+              title = "Superfund Sites in PA")
+```
