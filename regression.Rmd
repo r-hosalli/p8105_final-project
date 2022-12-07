@@ -1,0 +1,108 @@
+---
+title: "Regression"
+output: github_document
+---
+
+
+```{r}
+library(tidyverse)
+library(sf)
+library(tmap)
+library(spgwr)
+library(jtools)
+library(tmaptools)
+library(viridis)
+library(modelr)
+library(mgcv)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 10, 
+  fig.height = 10,
+  out.width = "90%")
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+##Planned Analysis
+
+Health Outcomes:
+Do these by 
+-   Asthma rates over time by county
+
+-   Distribution of Cancer by county 
+
+
+-   Association testing of oil reserve proximity and outcomes (asthma,
+    low birth weight)
+```{r}
+health_outcomes = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-state_abbr, -state_desc)
+```
+
+```{r}
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% mutate(
+    county_name = county
+  )%>%
+  select(-region_id, -state, -construction_completion_number, -site_listing_narrative, -site_progress_profile,-county, -proposed_fr_notice, -listing_fr_notice, -noid_fr_notice, -deletion_fr_notice, -restoration_fr_notice_jumper_page, -x, -y, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")%>%relocate(county_name)
+```
+
+Combine the data
+```{r}
+overall_merged_Data =
+  left_join(health_outcomes,superfund_sites, by = 'county_name')
+```
+
+#Outcome: Cancer and Asthma Rates
+
+#Crude Model: Cancer and Asthma Rates by County  
+```{r}
+glimpse(overall_merged_Data)
+cancer_reg_models_normal=
+  overall_merged_Data%>%
+  glm(
+    cancer_crude_prev ~ access2_crude_prev,
+    data = .)
+summary(cancer_reg_models_normal)
+
+cancer_gwr =
+  overall_merged_Data %>% gwr.sel(cancer_crude_prev ~ access2_crude_prev,
+          data = ., 
+          adapt = FALSE,
+          coords = cbind(longitude,latitude),
+          gweight = gwr.Gauss, 
+          verbose = FALSE)  
+
+```
+
+Find if the location has a power point 
+
+#Confounder Selection: Analyize the 
+```{r}
+
+```
+
+#Adjusted Analysis
+```{r}
+
+```
+
+#Model Fit
+```{r}
+
+```

@@ -18,21 +18,34 @@ it is a major producer of oil and thus Outgassing.
 
 ## Intended Final Products
 
-Flex dashboard with interactive plots
+We plan on creating a website with:
 
-Heatmaps
+-   Page detailing statistical analyses conducted
 
-General descriptive statistics
+-   Interactive flex dashboard page showing trends over time
+
+-   Interactive map showing the locations of oil reserves in
+    Pennsylvania
+
+-   Project Report
 
 ## Anticipated Data Sources
 
-\<\<\<\<\<\<\< HEAD We plan on using three data sources, which are the
+ We plan on using three data sources, which are the
 US Energy Information Administration, the US Environmental Protection
 Agency, and the US Census. All data will be limited geographically to
 the county-level in Pennsylvania and for years 1980-2020, by decade. The
 US Energy Information Administration (EIA) has data on CO2 emissions
 that we will use as the exposure for the health outcomes we are
 observing, birthweight and asthma. The US Environmental Protection
+=======
+We plan on using three data sources, which are the US Energy Information
+Administration, the US Environmental Protection Agency, and the US
+Census. All data will be limited geographically to the county-level in
+Pennsylvania and for years 1980-2020, by decade. The US Energy
+Information Administration (EIA) has data on crude oil reserves/CO2
+emissions that we will use as the exposure for the health outcomes we
+are observing, birthweight and asthma. The US Environmental Protection
 Agency has data on air quality, which would theoretically be a mediator
 for the association between CO2 emissions and the health outcomes of low
 birthweight and asthma. Lastly, we will use US Census data to get the
@@ -45,21 +58,48 @@ Pennsylvania.
 Census: <https://www.census.gov/quickfacts/PA>
 
 EIA - US reserve: <https://www.eia.gov/naturalgas/crudeoilreserves/>
-\>\>\>\>\>\>\> 00d468c0ed5b094fb408ca8c34700314e45ebb29
+
+
+=======
+EIA - US reserve: <https://www.eia.gov/naturalgas/crudeoilreserves/>
+
+EPA: <https://www.epa.gov/outdoor-air-quality-data/download-daily-data>
+
+Census: <https://www.census.gov/quickfacts/PA>
+
 
 ## Planned Analyses/Visualizations/Coding Challenges
 
-Descriptive statistics, interactive dashboard with maps
+We plan to perform basic descriptive statistics, plus regression
+analyses. We will display our results using interactive flex dashboards,
+and an interactive map.
 
-Challenges: geo-spatial visualization, cleaning and merging three
-datasets
+Planned Analyses:
+
+-   Change in oil reserves in trillion cubic feet or number of reserves
+    in Pennsylvania state
+
+-   Asthma rates over time by county
+
+-   Distribution of Low Birth Weight by county over time
+
+-   Heatmaps to show where the oil reserves are located
+
+-   Association testing of oil reserve proximity and outcomes (asthma,
+    low birth weight)
+
+Anticipated challenges include cleaning and merging three separate
+datasets, along with geospatial visualization. We don’t anticipate much
+issues with the basic descriptive analyses. Association testing may be
+complicated.
 
 ## Planned Timeline
 
-Nov 22rd: Data cleaned, introduction, data sources, motivation.
+Nov 22nd: All 3 datasets cleaned and tidied, written introduction to
+webpage that includes data sources and motivation for the project.
 
 Dec 2nd: All visualizations and near final website completed.
 
 Dec 7th: Screencast completed after finalizing website.
 
-Dec 10th: Complete Project submission with all report and webpage.
+Dec 10th: Complete project submission with finalized report and webpage.
