@@ -41,14 +41,27 @@ health_outcomes =
   mutate(
     county = as.factor(county)
   ) %>% 
-  select(state, county, casthma_crude_prev,cancer_crude_prev, ) %>% 
-  filter(state == "PA")
-
+  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci ) %>% 
+  filter(state == "PA") %>%
+  mutate(asthma_ci = str_remove_all(casthma_crude95ci, '[()]'),
+         cancer_ci = str_remove_all(cancer_crude95ci, '[()]')) %>%
+  select(-casthma_crude95ci,-cancer_crude95ci) %>%
+  separate(asthma_ci, into = c("asthma_lower", "asthma_upper"), sep = ",") %>%
+   separate(cancer_ci, into = c("cancer_lower", "cancer_upper"), sep = ",") %>%
+  mutate(
+    asthma_lower = as.numeric(asthma_lower),
+    asthma_upper = as.numeric(asthma_upper),
+    cancer_lower = as.numeric(cancer_lower),
+    cancer_upper = as.numeric(cancer_upper)
+  )
+  
+  
 ggplot(health_outcomes,
-aes(x = reorder(county,+casthma_crude_prev), y = casthma_crude_prev, color = county, fill = county)) + 
-  geom_bar(stat = "identity") +
-  coord_flip() +
+aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = county)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin = asthma_lower, ymax = asthma_upper)) +
   theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     legend.position = "none") +
    labs(
     x = " ",
@@ -60,37 +73,12 @@ aes(x = reorder(county,+casthma_crude_prev), y = casthma_crude_prev, color = cou
 ![](Exploratory_Analysis_files/figure-gfm/plot%202%20-1.png)<!-- -->
 
 ``` r
-top_asthma_outcomes = 
-  read_csv("./data/PLACES_County_2022.csv") %>% 
-  janitor::clean_names() %>% 
-  rename(county = county_name, state = state_abbr) %>% 
-  mutate(
-    county = as.factor(county)
-  ) %>% 
-  select(state, county, casthma_crude_prev, ) %>% 
-  filter(state == "PA", casthma_crude_prev >= 10.4) 
-
-ggplot(top_asthma_outcomes,
-aes(x = reorder(county,+casthma_crude_prev), y = casthma_crude_prev, color = county, fill = county)) + 
-  geom_bar(stat = "identity") +
-  coord_flip() +
-  theme(
-    legend.position = "none") +
-   labs(
-    x = " ",
-    y = "Crude Asthma Prevalence"
-  ) +
-  ggtitle("Top 10 Counties With Highest Asthma Prevalence in PA ")
-```
-
-![](Exploratory_Analysis_files/figure-gfm/plot%202%20-2.png)<!-- -->
-
-``` r
 ggplot(health_outcomes,
-aes(x = reorder(county,+cancer_crude_prev), y = cancer_crude_prev, color = county, fill = county)) + 
-  geom_bar(stat = "identity") +
-  coord_flip() +
+aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = county)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin = cancer_lower, ymax = cancer_upper)) +
   theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     legend.position = "none") +
    labs(
     x = " ",
@@ -99,30 +87,4 @@ aes(x = reorder(county,+cancer_crude_prev), y = cancer_crude_prev, color = count
   ggtitle("Prevalence of Cancer Among Adults 18+ by County 2020")
 ```
 
-![](Exploratory_Analysis_files/figure-gfm/plot%202%20-3.png)<!-- -->
-
-``` r
-top_cancer_outcomes = 
-  read_csv("./data/PLACES_County_2022.csv") %>% 
-  janitor::clean_names() %>% 
-  rename(county = county_name, state = state_abbr) %>% 
-  mutate(
-    county = as.factor(county)
-  ) %>% 
-  select(state, county, cancer_crude_prev, ) %>% 
-  filter(state == "PA", cancer_crude_prev >= 8.5) 
-
-ggplot(top_cancer_outcomes,
-aes(x = reorder(county,+cancer_crude_prev), y = cancer_crude_prev, color = county, fill = county)) + 
-  geom_bar(stat = "identity") +
-  coord_flip() +
-  theme(
-    legend.position = "none") +
-   labs(
-    x = " ",
-    y = "Crude Cancer Prevalence"
-  ) +
-  ggtitle("Top 11 Counties with Highest Prevalence of Cancer in PA")
-```
-
-![](Exploratory_Analysis_files/figure-gfm/plot%202%20-4.png)<!-- -->
+![](Exploratory_Analysis_files/figure-gfm/plot%202%20-2.png)<!-- -->
