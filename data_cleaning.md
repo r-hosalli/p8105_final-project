@@ -4,24 +4,7 @@ Vanessa Dinh
 
 ``` r
 library(tidyverse)
-```
-
-    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-    ## ✔ ggplot2 3.3.6     ✔ purrr   0.3.4
-    ## ✔ tibble  3.1.8     ✔ dplyr   1.0.9
-    ## ✔ tidyr   1.2.0     ✔ stringr 1.4.1
-    ## ✔ readr   2.1.2     ✔ forcats 0.5.2
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-
-``` r
 library(sf)
-```
-
-    ## Linking to GEOS 3.9.1, GDAL 3.4.3, PROJ 7.2.1; sf_use_s2() is TRUE
-
-``` r
 library(tmap)
 library(tmaptools)
 ```
@@ -40,10 +23,10 @@ health_outcomes =
 ```
 
     ## Rows: 3143 Columns: 126
-    ## ── Column specification ────────────────────────────────────────────────────────
+    ## ── Column specification ──────────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## chr (65): StateAbbr, StateDesc, CountyName, CountyFIPS, ACCESS2_Crude95CI, A...
-    ## dbl (61): TotalPopulation, ACCESS2_CrudePrev, ACCESS2_AdjPrev, ARTHRITIS_Cru...
+    ## chr (65): StateAbbr, StateDesc, CountyName, CountyFIPS, ACCESS2_Crude95CI, ACCESS2_Adj95CI, AR...
+    ## dbl (61): TotalPopulation, ACCESS2_CrudePrev, ACCESS2_AdjPrev, ARTHRITIS_CrudePrev, ARTHRITIS_...
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -99,10 +82,10 @@ superfund_sites =
 ```
 
     ## Rows: 126 Columns: 27
-    ## ── Column specification ────────────────────────────────────────────────────────
+    ## ── Column specification ──────────────────────────────────────────────────────────────────────────
     ## Delimiter: ","
-    ## chr (18): Site Name, Site EPA ID, State, City, County, Status, Proposed Date...
-    ## dbl  (8): Site Score, SEMS ID, Region ID, Latitude, Longitude, Construction ...
+    ## chr (18): Site Name, Site EPA ID, State, City, County, Status, Proposed Date, Listing Date, Co...
+    ## dbl  (8): Site Score, SEMS ID, Region ID, Latitude, Longitude, Construction Completion Number,...
     ## lgl  (1): Restoration FR Notice Jumper Page
     ## 
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
@@ -140,8 +123,8 @@ st_crs(sf_superfund)
     ##             ANGLEUNIT["degree",0.0174532925199433]],
     ##     USAGE[
     ##         SCOPE["Geodesy."],
-    ##         AREA["North America - onshore and offshore: Canada - Alberta; British Columbia; Manitoba; New Brunswick; Newfoundland and Labrador; Northwest Territories; Nova Scotia; Nunavut; Ontario; Prince Edward Island; Quebec; Saskatchewan; Yukon. Puerto Rico. United States (USA) - Alabama; Alaska; Arizona; Arkansas; California; Colorado; Connecticut; Delaware; Florida; Georgia; Hawaii; Idaho; Illinois; Indiana; Iowa; Kansas; Kentucky; Louisiana; Maine; Maryland; Massachusetts; Michigan; Minnesota; Mississippi; Missouri; Montana; Nebraska; Nevada; New Hampshire; New Jersey; New Mexico; New York; North Carolina; North Dakota; Ohio; Oklahoma; Oregon; Pennsylvania; Rhode Island; South Carolina; South Dakota; Tennessee; Texas; Utah; Vermont; Virginia; Washington; West Virginia; Wisconsin; Wyoming. US Virgin Islands.  British Virgin Islands."],
-    ##         BBOX[14.92,167.65,86.46,-47.74]],
+    ##         AREA["North America - onshore and offshore: Canada - Alberta; British Columbia; Manitoba; New Brunswick; Newfoundland and Labrador; Northwest Territories; Nova Scotia; Nunavut; Ontario; Prince Edward Island; Quebec; Saskatchewan; Yukon. Puerto Rico. United States (USA) - Alabama; Alaska; Arizona; Arkansas; California; Colorado; Connecticut; Delaware; Florida; Georgia; Hawaii; Idaho; Illinois; Indiana; Iowa; Kansas; Kentucky; Louisiana; Maine; Maryland; Massachusetts; Michigan; Minnesota; Mississippi; Missouri; Montana; Nebraska; Nevada; New Hampshire; New Jersey; New Mexico; New York; North Carolina; North Dakota; Ohio; Oklahoma; Oregon; Pennsylvania; Rhode Island; South Carolina; South Dakota; Tennessee; Texas; Utah; Vermont; Virginia; Washington; West Virginia; Wisconsin; Wyoming. US Virgin Islands. British Virgin Islands."],
+    ##         BBOX[14.92,167.65,86.45,-40.73]],
     ##     ID["EPSG",4269]]
 
 ``` r
@@ -172,7 +155,7 @@ pa_county =
 ```
 
     ## Reading layer `PaCounty2022_11' from data source 
-    ##   `C:\Users\Vanessa\Documents\Columbia MPH\Data Science I\Final Project\p8105_final_project\data\PaCounty2022_11.shp' 
+    ##   `/Users/rahulhosalli/Box Sync/Columbia/Fall 2022/Data Science/p8105_final-project/data/PaCounty2022_11.shp' 
     ##   using driver `ESRI Shapefile'
     ## Simple feature collection with 67 features and 25 fields
     ## Geometry type: MULTIPOLYGON
