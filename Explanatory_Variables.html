@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Exploratory Analysis of Explanatory Variables</title>
+
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="data_cleaning.html">data_cleaning</a>
+</li>
+<li>
+  <a href="mailto:&lt;rh3064@cumc.columbia.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/r-hosalli/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Exploratory Analysis of Explanatory
+Variables</h1>
+
+</div>
+
+
+<table>
+<thead>
+<tr class="header">
+<th align="left">County</th>
+<th align="right">Number of Superfunds</th>
+<th align="right">Mean Site Score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Columbia</td>
+<td align="right">1</td>
+<td align="right">70.710</td>
+</tr>
+<tr class="even">
+<td align="left">Cumberland</td>
+<td align="right">1</td>
+<td align="right">50.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Delaware, Philadelphia</td>
+<td align="right">1</td>
+<td align="right">50.000</td>
+</tr>
+<tr class="even">
+<td align="left">Mercer</td>
+<td align="right">3</td>
+<td align="right">48.643</td>
+</tr>
+<tr class="odd">
+<td align="left">Allegheny</td>
+<td align="right">3</td>
+<td align="right">47.953</td>
+</tr>
+<tr class="even">
+<td align="left">Lehigh</td>
+<td align="right">3</td>
+<td align="right">47.513</td>
+</tr>
+<tr class="odd">
+<td align="left">Northampton</td>
+<td align="right">2</td>
+<td align="right">47.190</td>
+</tr>
+<tr class="even">
+<td align="left">Montour</td>
+<td align="right">1</td>
+<td align="right">46.440</td>
+</tr>
+<tr class="odd">
+<td align="left">Lebanon</td>
+<td align="right">1</td>
+<td align="right">46.250</td>
+</tr>
+<tr class="even">
+<td align="left">Centre</td>
+<td align="right">1</td>
+<td align="right">45.090</td>
+</tr>
+<tr class="odd">
+<td align="left">Carbon</td>
+<td align="right">2</td>
+<td align="right">44.755</td>
+</tr>
+<tr class="even">
+<td align="left">Delaware</td>
+<td align="right">2</td>
+<td align="right">44.170</td>
+</tr>
+<tr class="odd">
+<td align="left">Erie</td>
+<td align="right">2</td>
+<td align="right">44.100</td>
+</tr>
+<tr class="even">
+<td align="left">Montgomery</td>
+<td align="right">17</td>
+<td align="right">43.359</td>
+</tr>
+<tr class="odd">
+<td align="left">Luzerne</td>
+<td align="right">1</td>
+<td align="right">43.160</td>
+</tr>
+<tr class="even">
+<td align="left">Bucks</td>
+<td align="right">8</td>
+<td align="right">42.430</td>
+</tr>
+<tr class="odd">
+<td align="left">Lycoming</td>
+<td align="right">1</td>
+<td align="right">42.240</td>
+</tr>
+<tr class="even">
+<td align="left">Philadelphia</td>
+<td align="right">2</td>
+<td align="right">41.715</td>
+</tr>
+<tr class="odd">
+<td align="left">Adams</td>
+<td align="right">4</td>
+<td align="right">41.132</td>
+</tr>
+<tr class="even">
+<td align="left">Blair</td>
+<td align="right">1</td>
+<td align="right">41.080</td>
+</tr>
+<tr class="odd">
+<td align="left">Mifflin</td>
+<td align="right">1</td>
+<td align="right">40.370</td>
+</tr>
+<tr class="even">
+<td align="left">Lancaster</td>
+<td align="right">2</td>
+<td align="right">39.880</td>
+</tr>
+<tr class="odd">
+<td align="left">Berks</td>
+<td align="right">8</td>
+<td align="right">39.859</td>
+</tr>
+<tr class="even">
+<td align="left">Chester</td>
+<td align="right">9</td>
+<td align="right">39.062</td>
+</tr>
+<tr class="odd">
+<td align="left">Clinton</td>
+<td align="right">1</td>
+<td align="right">38.520</td>
+</tr>
+<tr class="even">
+<td align="left">York</td>
+<td align="right">3</td>
+<td align="right">36.290</td>
+</tr>
+<tr class="odd">
+<td align="left">Franklin</td>
+<td align="right">2</td>
+<td align="right">35.860</td>
+</tr>
+<tr class="even">
+<td align="left">Monroe</td>
+<td align="right">2</td>
+<td align="right">34.965</td>
+</tr>
+<tr class="odd">
+<td align="left">Bradford</td>
+<td align="right">1</td>
+<td align="right">34.790</td>
+</tr>
+<tr class="even">
+<td align="left">Susquehanna</td>
+<td align="right">1</td>
+<td align="right">33.740</td>
+</tr>
+<tr class="odd">
+<td align="left">Crawford</td>
+<td align="right">1</td>
+<td align="right">33.620</td>
+</tr>
+<tr class="even">
+<td align="left">Schuylkill</td>
+<td align="right">1</td>
+<td align="right">31.020</td>
+</tr>
+<tr class="odd">
+<td align="left">Jefferson</td>
+<td align="right">1</td>
+<td align="right">30.220</td>
+</tr>
+</tbody>
+</table>
+<div id="htmlwidget-ca183453cb4426abe4ee" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ca183453cb4426abe4ee">{"x":{"visdat":{"3ec015cd2e37":["function () ","plotlyVisDat"]},"cur_data":"3ec015cd2e37","attrs":{"3ec015cd2e37":{"x":{},"y":{},"color":{},"colors":"viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"categoryorder":"total descending","title":"County","type":"category","categoryarray":["Adams","Allegheny","Berks","Blair","Bradford","Bucks","Carbon","Centre","Chester","Clinton","Columbia","Crawford","Cumberland","Delaware","Delaware, Philadelphia","Erie","Franklin","Jefferson","Lancaster","Lebanon","Lehigh","Luzerne","Lycoming","Mercer","Mifflin","Monroe","Montgomery","Montour","Northampton","Philadelphia","Schuylkill","Susquehanna","York"]},"title":"Mean Superfund Site Score by County ","yaxis":{"domain":[0,1],"automargin":true,"title":"Mean Score"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["Adams"],"y":[41.1325],"type":"bar","name":"Adams","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Allegheny"],"y":[47.9533333333333],"type":"bar","name":"Allegheny","marker":{"color":"rgba(71,13,96,1)","line":{"color":"rgba(71,13,96,1)"}},"textfont":{"color":"rgba(71,13,96,1)"},"error_y":{"color":"rgba(71,13,96,1)"},"error_x":{"color":"rgba(71,13,96,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Berks"],"y":[39.85875],"type":"bar","name":"Berks","marker":{"color":"rgba(72,24,106,1)","line":{"color":"rgba(72,24,106,1)"}},"textfont":{"color":"rgba(72,24,106,1)"},"error_y":{"color":"rgba(72,24,106,1)"},"error_x":{"color":"rgba(72,24,106,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Blair"],"y":[41.08],"type":"bar","name":"Blair","marker":{"color":"rgba(72,35,116,1)","line":{"color":"rgba(72,35,116,1)"}},"textfont":{"color":"rgba(72,35,116,1)"},"error_y":{"color":"rgba(72,35,116,1)"},"error_x":{"color":"rgba(72,35,116,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bradford"],"y":[34.79],"type":"bar","name":"Bradford","marker":{"color":"rgba(71,45,123,1)","line":{"color":"rgba(71,45,123,1)"}},"textfont":{"color":"rgba(71,45,123,1)"},"error_y":{"color":"rgba(71,45,123,1)"},"error_x":{"color":"rgba(71,45,123,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Bucks"],"y":[42.43],"type":"bar","name":"Bucks","marker":{"color":"rgba(69,55,129,1)","line":{"color":"rgba(69,55,129,1)"}},"textfont":{"color":"rgba(69,55,129,1)"},"error_y":{"color":"rgba(69,55,129,1)"},"error_x":{"color":"rgba(69,55,129,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Carbon"],"y":[44.755],"type":"bar","name":"Carbon","marker":{"color":"rgba(66,64,134,1)","line":{"color":"rgba(66,64,134,1)"}},"textfont":{"color":"rgba(66,64,134,1)"},"error_y":{"color":"rgba(66,64,134,1)"},"error_x":{"color":"rgba(66,64,134,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Centre"],"y":[45.09],"type":"bar","name":"Centre","marker":{"color":"rgba(62,73,137,1)","line":{"color":"rgba(62,73,137,1)"}},"textfont":{"color":"rgba(62,73,137,1)"},"error_y":{"color":"rgba(62,73,137,1)"},"error_x":{"color":"rgba(62,73,137,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Chester"],"y":[39.0622222222222],"type":"bar","name":"Chester","marker":{"color":"rgba(59,82,139,1)","line":{"color":"rgba(59,82,139,1)"}},"textfont":{"color":"rgba(59,82,139,1)"},"error_y":{"color":"rgba(59,82,139,1)"},"error_x":{"color":"rgba(59,82,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Clinton"],"y":[38.52],"type":"bar","name":"Clinton","marker":{"color":"rgba(55,91,141,1)","line":{"color":"rgba(55,91,141,1)"}},"textfont":{"color":"rgba(55,91,141,1)"},"error_y":{"color":"rgba(55,91,141,1)"},"error_x":{"color":"rgba(55,91,141,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Columbia"],"y":[70.71],"type":"bar","name":"Columbia","marker":{"color":"rgba(51,99,141,1)","line":{"color":"rgba(51,99,141,1)"}},"textfont":{"color":"rgba(51,99,141,1)"},"error_y":{"color":"rgba(51,99,141,1)"},"error_x":{"color":"rgba(51,99,141,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Crawford"],"y":[33.62],"type":"bar","name":"Crawford","marker":{"color":"rgba(47,107,142,1)","line":{"color":"rgba(47,107,142,1)"}},"textfont":{"color":"rgba(47,107,142,1)"},"error_y":{"color":"rgba(47,107,142,1)"},"error_x":{"color":"rgba(47,107,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Cumberland"],"y":[50],"type":"bar","name":"Cumberland","marker":{"color":"rgba(44,114,142,1)","line":{"color":"rgba(44,114,142,1)"}},"textfont":{"color":"rgba(44,114,142,1)"},"error_y":{"color":"rgba(44,114,142,1)"},"error_x":{"color":"rgba(44,114,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Delaware"],"y":[44.17],"type":"bar","name":"Delaware","marker":{"color":"rgba(41,122,142,1)","line":{"color":"rgba(41,122,142,1)"}},"textfont":{"color":"rgba(41,122,142,1)"},"error_y":{"color":"rgba(41,122,142,1)"},"error_x":{"color":"rgba(41,122,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Delaware, Philadelphia"],"y":[50],"type":"bar","name":"Delaware, Philadelphia","marker":{"color":"rgba(38,130,142,1)","line":{"color":"rgba(38,130,142,1)"}},"textfont":{"color":"rgba(38,130,142,1)"},"error_y":{"color":"rgba(38,130,142,1)"},"error_x":{"color":"rgba(38,130,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Erie"],"y":[44.1],"type":"bar","name":"Erie","marker":{"color":"rgba(35,137,142,1)","line":{"color":"rgba(35,137,142,1)"}},"textfont":{"color":"rgba(35,137,142,1)"},"error_y":{"color":"rgba(35,137,142,1)"},"error_x":{"color":"rgba(35,137,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Franklin"],"y":[35.86],"type":"bar","name":"Franklin","marker":{"color":"rgba(33,144,141,1)","line":{"color":"rgba(33,144,141,1)"}},"textfont":{"color":"rgba(33,144,141,1)"},"error_y":{"color":"rgba(33,144,141,1)"},"error_x":{"color":"rgba(33,144,141,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Jefferson"],"y":[30.22],"type":"bar","name":"Jefferson","marker":{"color":"rgba(31,151,139,1)","line":{"color":"rgba(31,151,139,1)"}},"textfont":{"color":"rgba(31,151,139,1)"},"error_y":{"color":"rgba(31,151,139,1)"},"error_x":{"color":"rgba(31,151,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Lancaster"],"y":[39.88],"type":"bar","name":"Lancaster","marker":{"color":"rgba(31,159,136,1)","line":{"color":"rgba(31,159,136,1)"}},"textfont":{"color":"rgba(31,159,136,1)"},"error_y":{"color":"rgba(31,159,136,1)"},"error_x":{"color":"rgba(31,159,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Lebanon"],"y":[46.25],"type":"bar","name":"Lebanon","marker":{"color":"rgba(33,166,133,1)","line":{"color":"rgba(33,166,133,1)"}},"textfont":{"color":"rgba(33,166,133,1)"},"error_y":{"color":"rgba(33,166,133,1)"},"error_x":{"color":"rgba(33,166,133,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Lehigh"],"y":[47.5133333333333],"type":"bar","name":"Lehigh","marker":{"color":"rgba(39,173,129,1)","line":{"color":"rgba(39,173,129,1)"}},"textfont":{"color":"rgba(39,173,129,1)"},"error_y":{"color":"rgba(39,173,129,1)"},"error_x":{"color":"rgba(39,173,129,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Luzerne"],"y":[43.16],"type":"bar","name":"Luzerne","marker":{"color":"rgba(49,181,123,1)","line":{"color":"rgba(49,181,123,1)"}},"textfont":{"color":"rgba(49,181,123,1)"},"error_y":{"color":"rgba(49,181,123,1)"},"error_x":{"color":"rgba(49,181,123,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Lycoming"],"y":[42.24],"type":"bar","name":"Lycoming","marker":{"color":"rgba(62,188,116,1)","line":{"color":"rgba(62,188,116,1)"}},"textfont":{"color":"rgba(62,188,116,1)"},"error_y":{"color":"rgba(62,188,116,1)"},"error_x":{"color":"rgba(62,188,116,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Mercer"],"y":[48.6433333333333],"type":"bar","name":"Mercer","marker":{"color":"rgba(77,194,108,1)","line":{"color":"rgba(77,194,108,1)"}},"textfont":{"color":"rgba(77,194,108,1)"},"error_y":{"color":"rgba(77,194,108,1)"},"error_x":{"color":"rgba(77,194,108,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Mifflin"],"y":[40.37],"type":"bar","name":"Mifflin","marker":{"color":"rgba(93,200,99,1)","line":{"color":"rgba(93,200,99,1)"}},"textfont":{"color":"rgba(93,200,99,1)"},"error_y":{"color":"rgba(93,200,99,1)"},"error_x":{"color":"rgba(93,200,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Monroe"],"y":[34.965],"type":"bar","name":"Monroe","marker":{"color":"rgba(110,206,88,1)","line":{"color":"rgba(110,206,88,1)"}},"textfont":{"color":"rgba(110,206,88,1)"},"error_y":{"color":"rgba(110,206,88,1)"},"error_x":{"color":"rgba(110,206,88,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Montgomery"],"y":[43.3594117647059],"type":"bar","name":"Montgomery","marker":{"color":"rgba(130,211,77,1)","line":{"color":"rgba(130,211,77,1)"}},"textfont":{"color":"rgba(130,211,77,1)"},"error_y":{"color":"rgba(130,211,77,1)"},"error_x":{"color":"rgba(130,211,77,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Montour"],"y":[46.44],"type":"bar","name":"Montour","marker":{"color":"rgba(149,216,64,1)","line":{"color":"rgba(149,216,64,1)"}},"textfont":{"color":"rgba(149,216,64,1)"},"error_y":{"color":"rgba(149,216,64,1)"},"error_x":{"color":"rgba(149,216,64,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Northampton"],"y":[47.19],"type":"bar","name":"Northampton","marker":{"color":"rgba(170,220,50,1)","line":{"color":"rgba(170,220,50,1)"}},"textfont":{"color":"rgba(170,220,50,1)"},"error_y":{"color":"rgba(170,220,50,1)"},"error_x":{"color":"rgba(170,220,50,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Philadelphia"],"y":[41.715],"type":"bar","name":"Philadelphia","marker":{"color":"rgba(192,223,37,1)","line":{"color":"rgba(192,223,37,1)"}},"textfont":{"color":"rgba(192,223,37,1)"},"error_y":{"color":"rgba(192,223,37,1)"},"error_x":{"color":"rgba(192,223,37,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Schuylkill"],"y":[31.02],"type":"bar","name":"Schuylkill","marker":{"color":"rgba(213,226,26,1)","line":{"color":"rgba(213,226,26,1)"}},"textfont":{"color":"rgba(213,226,26,1)"},"error_y":{"color":"rgba(213,226,26,1)"},"error_x":{"color":"rgba(213,226,26,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Susquehanna"],"y":[33.74],"type":"bar","name":"Susquehanna","marker":{"color":"rgba(234,229,26,1)","line":{"color":"rgba(234,229,26,1)"}},"textfont":{"color":"rgba(234,229,26,1)"},"error_y":{"color":"rgba(234,229,26,1)"},"error_x":{"color":"rgba(234,229,26,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["York"],"y":[36.29],"type":"bar","name":"York","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

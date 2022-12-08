@@ -1,8 +1,6 @@
 ---
-title: "Exploratory Analyses"
-author: "Mindy Tran"
-date: "2022-12-07"
-output: github_document
+title: "Exploratory Analysis of Superfunds and Asthma and Cancer Prevalence in PA"
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -26,7 +24,9 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-```{r plot 1, message=FALSE, warning=FALSE}
+
+
+```{r plot 1, echo= FALSE, message=FALSE, warning=FALSE}
 superfund_sites =
   read_csv("./data/superfund_NPL_sites.csv") %>% 
   janitor::clean_names() %>% 
@@ -55,7 +55,9 @@ aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = c
 
 ```
 
-```{r plot 2 , message=FALSE, warning=FALSE}
+
+
+```{r plot 2, echo=FALSE, message=FALSE, warning=FALSE}
 health_outcomes = 
   read_csv("./data/PLACES_County_2022.csv") %>% 
   janitor::clean_names() %>% 
@@ -77,7 +79,7 @@ health_outcomes =
     cancer_upper = as.numeric(cancer_upper)
   )
   
-  
+
 ggplot(health_outcomes,
 aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = county)) + 
   geom_point() +
@@ -90,9 +92,9 @@ aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = cou
     y = "Crude Asthma Prevalence"
   ) +
   ggtitle("Prevalence of Asthma Among Adults 18+ by County 2020")
+```
 
-
-
+```{r plot 3, echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(health_outcomes,
 aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = county)) + 
   geom_point() +
@@ -106,8 +108,9 @@ aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = count
   ) +
   ggtitle("Prevalence of Cancer Among Adults 18+ by County 2020")
 
-
 ```
+
+
 
 
 
