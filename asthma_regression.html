@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Asthma Regression</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="data_cleaning.html">Data Cleaning</a>
+</li>
+<li>
+  <a href="mailto:&lt;rh3064@cumc.columbia.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/r-hosalli/">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Asthma Regression</h1>
+
+</div>
+
+
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.0      ✔ stringr 1.4.1 
+## ✔ readr   2.1.2      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## Loading required package: nlme
+## 
+## 
+## Attaching package: &#39;nlme&#39;
+## 
+## 
+## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     collapse
+## 
+## 
+## This is mgcv 1.8-40. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.
+## 
+## 
+## Attaching package: &#39;lubridate&#39;
+## 
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     date, intersect, setdiff, union
+## 
+## 
+## 
+## Attaching package: &#39;broom&#39;
+## 
+## 
+## The following object is masked from &#39;package:modelr&#39;:
+## 
+##     bootstrap</code></pre>
+<pre><code>## Warning: package &#39;AER&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## Loading required package: car</code></pre>
+<pre><code>## Warning: package &#39;car&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre><code>## Warning: package &#39;carData&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;car&#39;
+## 
+## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     recode
+## 
+## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     some
+## 
+## Loading required package: lmtest</code></pre>
+<pre><code>## Warning: package &#39;lmtest&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## Warning: package &#39;zoo&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric
+## 
+## Loading required package: sandwich</code></pre>
+<pre><code>## Warning: package &#39;sandwich&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## Loading required package: survival</code></pre>
+<pre><code>## Warning: package &#39;lme4&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## Warning: package &#39;Matrix&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;
+## 
+## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack
+## 
+## 
+## Attaching package: &#39;lme4&#39;
+## 
+## The following object is masked from &#39;package:nlme&#39;:
+## 
+##     lmList</code></pre>
+<pre><code>## Warning: package &#39;optimx&#39; was built under R version 4.2.2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;optimx&#39;
+## 
+## The following object is masked from &#39;package:nlme&#39;:
+## 
+##     coef&lt;-</code></pre>
+<pre class="r"><code>health_outcomes = 
+  read_csv(&quot;./data/PLACES_County_2022.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  rename(county = county_name, state = state_abbr) %&gt;% 
+  mutate(
+    county = as.factor(county)
+  ) %&gt;% 
+  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci,access2_crude_prev,depression_crude_prev,csmoking_crude_prev,total_population) %&gt;% 
+  filter(state == &quot;PA&quot;) %&gt;%
+  mutate(asthma_ci = str_remove_all(casthma_crude95ci, &#39;[()]&#39;),
+         cancer_ci = str_remove_all(cancer_crude95ci, &#39;[()]&#39;)) %&gt;%
+  select(-casthma_crude95ci,-cancer_crude95ci) %&gt;%
+  separate(asthma_ci, into = c(&quot;asthma_lower&quot;, &quot;asthma_upper&quot;), sep = &quot;,&quot;) %&gt;%
+   separate(cancer_ci, into = c(&quot;cancer_lower&quot;, &quot;cancer_upper&quot;), sep = &quot;,&quot;) %&gt;%
+  mutate(
+    asthma_lower = as.numeric(asthma_lower),
+    asthma_upper = as.numeric(asthma_upper),
+    cancer_lower = as.numeric(cancer_lower),
+    cancer_upper = as.numeric(cancer_upper)
+  )</code></pre>
+<pre><code>## Rows: 3143 Columns: 126
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (65): StateAbbr, StateDesc, CountyName, CountyFIPS, ACCESS2_Crude95CI, A...
+## dbl (61): TotalPopulation, ACCESS2_CrudePrev, ACCESS2_AdjPrev, ARTHRITIS_Cru...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>superfund_sites =
+  read_csv(&quot;./data/superfund_NPL_sites.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with(&quot;notice&quot;), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date,-x,-y,-state) %&gt;% 
+  filter(status == &quot;NPL Site&quot;)</code></pre>
+<pre><code>## Rows: 126 Columns: 27
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (18): Site Name, Site EPA ID, State, City, County, Status, Proposed Date...
+## dbl  (8): Site Score, SEMS ID, Region ID, Latitude, Longitude, Construction ...
+## lgl  (1): Restoration FR Notice Jumper Page
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>superfund_by_county =
+  superfund_sites %&gt;% 
+  group_by(county) %&gt;% 
+  summarize(n_superfund = n()) %&gt;% 
+  mutate(
+    county = as.factor(county)) %&gt;%
+  as.data.frame(superfund_by_county)
+combined_data_1 =
+  left_join(health_outcomes, superfund_sites, by = &quot;county&quot;) 
+
+combined_data_final=left_join(combined_data_1, superfund_by_county, by = &quot;county&quot;)%&gt;% 
+  mutate_at(vars(&quot;n_superfund&quot;), ~replace(., is.na(.), 0))
+
+combined_data_final=
+  combined_data_final%&gt;%
+  mutate(
+          site_score =  replace(site_score, is.na(site_score), 0),
+          site_name = replace(site_name, is.na(site_name), &quot;None&quot;),
+          superfund_site = if_else(n_superfund == &#39;0&#39;,0, 1),
+          cancer_population = round((cancer_crude_prev/100)*total_population),
+          asthma_population = round((casthma_crude_prev/100)*total_population),
+          smoking_population = round((csmoking_crude_prev/100)*total_population),
+          depression_population = round((depression_crude_prev/100)*total_population),
+          insurance_population = round((access2_crude_prev/100)*total_population),
+          cancer_compared_national_average=if_else(cancer_crude_prev&gt;&#39;6.5&#39;, 1,0)
+          )</code></pre>
+<p>##Outcome: asthma Prevalence</p>
+<p>The data provided is at the state-level, however it was converted to
+county-level for the purpose of this model. We were originally given the
+The outcome of interest is the number of individuals with asthma in a 1
+year period by county differed by county.As this was count data, Poisson
+Regression with a log link function was utilized.No offset term was
+utilized in the data as count data is modeled.</p>
+<p>#Crude Model</p>
+<p>We evaluated the cancer crude counts (total number of individuals who
+had asthma by county) with counties with larger urban centers having
+higher cancer counts Upon running the Poisson regression model with a
+log link function, we found increased asthma prevalence, with the
+greatest occurring among Philadelphia county (RR: 18.468, 95% CI
+(18.280, 18.658)).</p>
+<pre class="r"><code>  combined_data_final %&gt;% 
+  glm(asthma_population ~ county, data = .,family = poisson(link = &#39;log&#39;))%&gt;%
+  broom::tidy()%&gt;%
+  mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error),
+    term = str_replace(term, &quot;^county&quot;, &quot;County: &quot;)
+  ) %&gt;% dplyr::select(term, RR, starts_with(&quot;CI&quot;))%&gt;%
+  filter(RR != &#39;NA&#39;)%&gt;%
+  filter(CI_lower != &#39;NA&#39;)%&gt;%
+  filter(CI_upper != &#39;NA&#39;)%&gt;%
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">RR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">10171.000</td>
+<td align="right">10072.644</td>
+<td align="right">10270.316</td>
+</tr>
+<tr class="even">
+<td align="left">County: Allegheny</td>
+<td align="right">11.791</td>
+<td align="right">11.671</td>
+<td align="right">11.912</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Armstrong</td>
+<td align="right">0.643</td>
+<td align="right">0.627</td>
+<td align="right">0.661</td>
+</tr>
+<tr class="even">
+<td align="left">County: Beaver</td>
+<td align="right">1.598</td>
+<td align="right">1.570</td>
+<td align="right">1.628</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Bedford</td>
+<td align="right">0.480</td>
+<td align="right">0.465</td>
+<td align="right">0.494</td>
+</tr>
+<tr class="even">
+<td align="left">County: Berks</td>
+<td align="right">4.098</td>
+<td align="right">4.056</td>
+<td align="right">4.140</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Blair</td>
+<td align="right">1.225</td>
+<td align="right">1.201</td>
+<td align="right">1.250</td>
+</tr>
+<tr class="even">
+<td align="left">County: Bradford</td>
+<td align="right">0.610</td>
+<td align="right">0.594</td>
+<td align="right">0.626</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Bucks</td>
+<td align="right">5.742</td>
+<td align="right">5.684</td>
+<td align="right">5.801</td>
+</tr>
+<tr class="even">
+<td align="left">County: Butler</td>
+<td align="right">1.822</td>
+<td align="right">1.791</td>
+<td align="right">1.854</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Cambria</td>
+<td align="right">1.290</td>
+<td align="right">1.265</td>
+<td align="right">1.316</td>
+</tr>
+<tr class="even">
+<td align="left">County: Cameron</td>
+<td align="right">0.045</td>
+<td align="right">0.041</td>
+<td align="right">0.049</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Carbon</td>
+<td align="right">0.636</td>
+<td align="right">0.624</td>
+<td align="right">0.649</td>
+</tr>
+<tr class="even">
+<td align="left">County: Centre</td>
+<td align="right">1.620</td>
+<td align="right">1.591</td>
+<td align="right">1.649</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Chester</td>
+<td align="right">4.817</td>
+<td align="right">4.768</td>
+<td align="right">4.866</td>
+</tr>
+<tr class="even">
+<td align="left">County: Clarion</td>
+<td align="right">0.395</td>
+<td align="right">0.383</td>
+<td align="right">0.408</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Clearfield</td>
+<td align="right">0.788</td>
+<td align="right">0.770</td>
+<td align="right">0.807</td>
+</tr>
+<tr class="even">
+<td align="left">County: Clinton</td>
+<td align="right">0.392</td>
+<td align="right">0.379</td>
+<td align="right">0.405</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Columbia</td>
+<td align="right">0.663</td>
+<td align="right">0.646</td>
+<td align="right">0.680</td>
+</tr>
+<tr class="even">
+<td align="left">County: Crawford</td>
+<td align="right">0.839</td>
+<td align="right">0.820</td>
+<td align="right">0.859</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Cumberland</td>
+<td align="right">2.365</td>
+<td align="right">2.327</td>
+<td align="right">2.403</td>
+</tr>
+<tr class="even">
+<td align="left">County: Dauphin</td>
+<td align="right">2.807</td>
+<td align="right">2.765</td>
+<td align="right">2.850</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Delaware</td>
+<td align="right">5.461</td>
+<td align="right">5.399</td>
+<td align="right">5.523</td>
+</tr>
+<tr class="even">
+<td align="left">County: Elk</td>
+<td align="right">0.291</td>
+<td align="right">0.280</td>
+<td align="right">0.302</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Erie</td>
+<td align="right">2.666</td>
+<td align="right">2.631</td>
+<td align="right">2.700</td>
+</tr>
+<tr class="even">
+<td align="left">County: Fayette</td>
+<td align="right">1.298</td>
+<td align="right">1.272</td>
+<td align="right">1.323</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Forest</td>
+<td align="right">0.066</td>
+<td align="right">0.062</td>
+<td align="right">0.072</td>
+</tr>
+<tr class="even">
+<td align="left">County: Franklin</td>
+<td align="right">1.576</td>
+<td align="right">1.553</td>
+<td align="right">1.599</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Fulton</td>
+<td align="right">0.144</td>
+<td align="right">0.137</td>
+<td align="right">0.152</td>
+</tr>
+<tr class="even">
+<td align="left">County: Greene</td>
+<td align="right">0.361</td>
+<td align="right">0.349</td>
+<td align="right">0.373</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Huntingdon</td>
+<td align="right">0.438</td>
+<td align="right">0.425</td>
+<td align="right">0.452</td>
+</tr>
+<tr class="even">
+<td align="left">County: Indiana</td>
+<td align="right">0.864</td>
+<td align="right">0.844</td>
+<td align="right">0.884</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Jefferson</td>
+<td align="right">0.437</td>
+<td align="right">0.423</td>
+<td align="right">0.450</td>
+</tr>
+<tr class="even">
+<td align="left">County: Juniata</td>
+<td align="right">0.247</td>
+<td align="right">0.237</td>
+<td align="right">0.257</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Lackawanna</td>
+<td align="right">2.055</td>
+<td align="right">2.021</td>
+<td align="right">2.089</td>
+</tr>
+<tr class="even">
+<td align="left">County: Lancaster</td>
+<td align="right">5.424</td>
+<td align="right">5.362</td>
+<td align="right">5.486</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Lawrence</td>
+<td align="right">0.853</td>
+<td align="right">0.834</td>
+<td align="right">0.873</td>
+</tr>
+<tr class="even">
+<td align="left">County: Lebanon</td>
+<td align="right">1.393</td>
+<td align="right">1.366</td>
+<td align="right">1.420</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Lehigh</td>
+<td align="right">3.646</td>
+<td align="right">3.604</td>
+<td align="right">3.687</td>
+</tr>
+<tr class="even">
+<td align="left">County: Luzerne</td>
+<td align="right">3.148</td>
+<td align="right">3.102</td>
+<td align="right">3.194</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Lycoming</td>
+<td align="right">1.135</td>
+<td align="right">1.112</td>
+<td align="right">1.159</td>
+</tr>
+<tr class="even">
+<td align="left">County: McKean</td>
+<td align="right">0.412</td>
+<td align="right">0.400</td>
+<td align="right">0.426</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Mercer</td>
+<td align="right">1.099</td>
+<td align="right">1.083</td>
+<td align="right">1.115</td>
+</tr>
+<tr class="even">
+<td align="left">County: Mifflin</td>
+<td align="right">0.489</td>
+<td align="right">0.475</td>
+<td align="right">0.504</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Monroe</td>
+<td align="right">1.740</td>
+<td align="right">1.715</td>
+<td align="right">1.765</td>
+</tr>
+<tr class="even">
+<td align="left">County: Montgomery</td>
+<td align="right">7.297</td>
+<td align="right">7.225</td>
+<td align="right">7.369</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Montour</td>
+<td align="right">0.174</td>
+<td align="right">0.166</td>
+<td align="right">0.182</td>
+</tr>
+<tr class="even">
+<td align="left">County: Northampton</td>
+<td align="right">2.917</td>
+<td align="right">2.881</td>
+<td align="right">2.954</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Northumberland</td>
+<td align="right">0.905</td>
+<td align="right">0.885</td>
+<td align="right">0.926</td>
+</tr>
+<tr class="even">
+<td align="left">County: Perry</td>
+<td align="right">0.459</td>
+<td align="right">0.445</td>
+<td align="right">0.473</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Philadelphia</td>
+<td align="right">18.468</td>
+<td align="right">18.280</td>
+<td align="right">18.658</td>
+</tr>
+<tr class="even">
+<td align="left">County: Pike</td>
+<td align="right">0.535</td>
+<td align="right">0.520</td>
+<td align="right">0.550</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Potter</td>
+<td align="right">0.167</td>
+<td align="right">0.159</td>
+<td align="right">0.175</td>
+</tr>
+<tr class="even">
+<td align="left">County: Schuylkill</td>
+<td align="right">1.397</td>
+<td align="right">1.371</td>
+<td align="right">1.424</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Snyder</td>
+<td align="right">0.404</td>
+<td align="right">0.392</td>
+<td align="right">0.417</td>
+</tr>
+<tr class="even">
+<td align="left">County: Somerset</td>
+<td align="right">0.724</td>
+<td align="right">0.706</td>
+<td align="right">0.742</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Sullivan</td>
+<td align="right">0.058</td>
+<td align="right">0.054</td>
+<td align="right">0.063</td>
+</tr>
+<tr class="even">
+<td align="left">County: Susquehanna</td>
+<td align="right">0.397</td>
+<td align="right">0.385</td>
+<td align="right">0.410</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Tioga</td>
+<td align="right">0.413</td>
+<td align="right">0.400</td>
+<td align="right">0.426</td>
+</tr>
+<tr class="even">
+<td align="left">County: Union</td>
+<td align="right">0.435</td>
+<td align="right">0.422</td>
+<td align="right">0.449</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Venango</td>
+<td align="right">0.510</td>
+<td align="right">0.495</td>
+<td align="right">0.525</td>
+</tr>
+<tr class="even">
+<td align="left">County: Warren</td>
+<td align="right">0.383</td>
+<td align="right">0.370</td>
+<td align="right">0.395</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Washington</td>
+<td align="right">1.993</td>
+<td align="right">1.959</td>
+<td align="right">2.026</td>
+</tr>
+<tr class="even">
+<td align="left">County: Wayne</td>
+<td align="right">0.493</td>
+<td align="right">0.479</td>
+<td align="right">0.508</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Westmoreland</td>
+<td align="right">3.378</td>
+<td align="right">3.330</td>
+<td align="right">3.427</td>
+</tr>
+<tr class="even">
+<td align="left">County: Wyoming</td>
+<td align="right">0.258</td>
+<td align="right">0.248</td>
+<td align="right">0.269</td>
+</tr>
+<tr class="odd">
+<td align="left">County: York</td>
+<td align="right">4.606</td>
+<td align="right">4.555</td>
+<td align="right">4.657</td>
+</tr>
+</tbody>
+</table>
+<p>#Confounder Selection:</p>
+<p>We hypothesized this was a function of population size in urban
+cities. We also believed that the asthma counts may have had to do with
+potentially more toxic Superfund sites. Finally, we were interested in
+the potential for SES (IE access to insurance), behavioral factors like
+smoking, and health attributes like asthma could potentially confound
+our study.Therefore, we opted to explore whether county population size
+was impacting this relationship.</p>
+<p><code>Total Population</code></p>
+<pre class="r"><code>combined_data_final %&gt;% 
+  glm(asthma_population ~total_population, data = .,family = poisson(link=&#39;log&#39;))%&gt;%
+  broom::tidy()%&gt;% 
+ knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">9.479</td>
+<td align="right">0.001</td>
+<td align="right">11136.838</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">total_population</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">1920.783</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><code>superfund site score</code></p>
+<pre class="r"><code>combined_data_final %&gt;% 
+  glm(asthma_population ~site_score, data = .,family = poisson(link=&#39;log&#39;))%&gt;%
+  broom::tidy()%&gt;% 
+ knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">9.532</td>
+<td align="right">0.001</td>
+<td align="right">7839.910</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">site_score</td>
+<td align="right">0.027</td>
+<td align="right">0.000</td>
+<td align="right">958.518</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><code>Depression</code>,</p>
+<pre class="r"><code>  combined_data_final %&gt;% 
+  glm(asthma_population ~depression_population, data = .,family = poisson(link=&#39;log&#39;))%&gt;%
+  broom::tidy()%&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">9.543</td>
+<td align="right">0.001</td>
+<td align="right">11670.330</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">depression_population</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">1921.769</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><code>Insurance_Status</code>,</p>
+<pre class="r"><code>  combined_data_final %&gt;% 
+  glm(asthma_population ~ insurance_population, data = .,family = poisson(link=&#39;log&#39;))%&gt;%
+  broom::tidy()%&gt;% 
+ knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">9.844</td>
+<td align="right">0.001</td>
+<td align="right">14544.932</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">insurance_population</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">1876.203</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><code>Smoking</code></p>
+<pre class="r"><code>  combined_data_final %&gt;% 
+  glm(asthma_population ~ smoking_population, data = .,family = poisson(link=&#39;log&#39;))%&gt;%
+  broom::tidy()%&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">9.747</td>
+<td align="right">0.001</td>
+<td align="right">13620.18</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">smoking_population</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">1919.31</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>#Adjusted Analysis</p>
+<p>After adjustment for these factors we find that our confounding
+factors (including the interaction term between Superfund_sites and
+county) are not significant, they do impact the county variables.
+Notably, when accounting for these variables, Philadelphia County no
+longer is our largest risk ratio but instead Fayette County (RR: 28.362,
+95% CI(22.214,36.211)). This would suggest that these factors do indeed
+impact our measurement of cancer by county. What makes this fascinating
+is that Fayette County does not have a Superfund site, furthering
+evidence that cancer counts may be due to outside factors not originally
+in our study.</p>
+<pre class="r"><code>  combined_data_final %&gt;% 
+  glm(asthma_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = &#39;log&#39;))%&gt;%
+  broom::tidy()%&gt;%
+  mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error),
+    term = str_replace(term, &quot;^county&quot;, &quot;County: &quot;)
+  ) %&gt;% dplyr::select(term, RR, starts_with(&quot;CI&quot;))%&gt;%
+  filter(RR != &#39;NA&#39;)%&gt;%
+  filter(CI_lower != &#39;NA&#39;)%&gt;%
+  filter(CI_upper != &#39;NA&#39;)%&gt;%
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">RR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">2356.033</td>
+<td align="right">2267.704</td>
+<td align="right">2447.802</td>
+</tr>
+<tr class="even">
+<td align="left">total_population</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+</tr>
+<tr class="odd">
+<td align="left">insurance_population</td>
+<td align="right">1.001</td>
+<td align="right">1.001</td>
+<td align="right">1.001</td>
+</tr>
+<tr class="even">
+<td align="left">depression_population</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+</tr>
+<tr class="odd">
+<td align="left">smoking_population</td>
+<td align="right">0.999</td>
+<td align="right">0.999</td>
+<td align="right">0.999</td>
+</tr>
+<tr class="even">
+<td align="left">site_score</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Allegheny</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">County: Armstrong</td>
+<td align="right">4.124</td>
+<td align="right">3.762</td>
+<td align="right">4.521</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Beaver</td>
+<td align="right">2.665</td>
+<td align="right">2.462</td>
+<td align="right">2.884</td>
+</tr>
+<tr class="even">
+<td align="left">County: Bedford</td>
+<td align="right">1.935</td>
+<td align="right">1.833</td>
+<td align="right">2.042</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Berks</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">County: Blair</td>
+<td align="right">4.612</td>
+<td align="right">4.118</td>
+<td align="right">5.164</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Bradford</td>
+<td align="right">3.760</td>
+<td align="right">3.339</td>
+<td align="right">4.235</td>
+</tr>
+<tr class="even">
+<td align="left">County: Bucks</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Butler</td>
+<td align="right">0.288</td>
+<td align="right">0.254</td>
+<td align="right">0.327</td>
+</tr>
+<tr class="even">
+<td align="left">County: Cambria</td>
+<td align="right">5.387</td>
+<td align="right">4.940</td>
+<td align="right">5.874</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Cameron</td>
+<td align="right">0.204</td>
+<td align="right">0.184</td>
+<td align="right">0.225</td>
+</tr>
+<tr class="even">
+<td align="left">County: Carbon</td>
+<td align="right">2.032</td>
+<td align="right">1.329</td>
+<td align="right">3.106</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Centre</td>
+<td align="right">0.068</td>
+<td align="right">0.055</td>
+<td align="right">0.083</td>
+</tr>
+<tr class="even">
+<td align="left">County: Chester</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Clarion</td>
+<td align="right">1.927</td>
+<td align="right">1.805</td>
+<td align="right">2.058</td>
+</tr>
+<tr class="even">
+<td align="left">County: Clearfield</td>
+<td align="right">2.041</td>
+<td align="right">1.924</td>
+<td align="right">2.166</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Clinton</td>
+<td align="right">1.806</td>
+<td align="right">1.647</td>
+<td align="right">1.980</td>
+</tr>
+<tr class="even">
+<td align="left">County: Columbia</td>
+<td align="right">1.295</td>
+<td align="right">1.198</td>
+<td align="right">1.399</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Crawford</td>
+<td align="right">5.022</td>
+<td align="right">4.400</td>
+<td align="right">5.732</td>
+</tr>
+<tr class="even">
+<td align="left">County: Cumberland</td>
+<td align="right">0.007</td>
+<td align="right">0.005</td>
+<td align="right">0.010</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Dauphin</td>
+<td align="right">0.016</td>
+<td align="right">0.011</td>
+<td align="right">0.023</td>
+</tr>
+<tr class="even">
+<td align="left">County: Delaware</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Elk</td>
+<td align="right">1.369</td>
+<td align="right">1.288</td>
+<td align="right">1.455</td>
+</tr>
+<tr class="even">
+<td align="left">County: Erie</td>
+<td align="right">0.482</td>
+<td align="right">0.424</td>
+<td align="right">0.548</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Fayette</td>
+<td align="right">28.362</td>
+<td align="right">22.214</td>
+<td align="right">36.211</td>
+</tr>
+<tr class="even">
+<td align="left">County: Forest</td>
+<td align="right">0.220</td>
+<td align="right">0.203</td>
+<td align="right">0.238</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Franklin</td>
+<td align="right">0.177</td>
+<td align="right">0.130</td>
+<td align="right">0.241</td>
+</tr>
+<tr class="even">
+<td align="left">County: Fulton</td>
+<td align="right">0.652</td>
+<td align="right">0.610</td>
+<td align="right">0.697</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Greene</td>
+<td align="right">1.633</td>
+<td align="right">1.538</td>
+<td align="right">1.734</td>
+</tr>
+<tr class="even">
+<td align="left">County: Huntingdon</td>
+<td align="right">1.121</td>
+<td align="right">1.080</td>
+<td align="right">1.163</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Indiana</td>
+<td align="right">3.766</td>
+<td align="right">3.352</td>
+<td align="right">4.232</td>
+</tr>
+<tr class="even">
+<td align="left">County: Jefferson</td>
+<td align="right">3.295</td>
+<td align="right">2.910</td>
+<td align="right">3.732</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Juniata</td>
+<td align="right">0.976</td>
+<td align="right">0.924</td>
+<td align="right">1.031</td>
+</tr>
+<tr class="even">
+<td align="left">County: Lackawanna</td>
+<td align="right">0.365</td>
+<td align="right">0.318</td>
+<td align="right">0.419</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Lancaster</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">County: Lawrence</td>
+<td align="right">3.568</td>
+<td align="right">3.331</td>
+<td align="right">3.823</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Lebanon</td>
+<td align="right">0.035</td>
+<td align="right">0.026</td>
+<td align="right">0.046</td>
+</tr>
+<tr class="even">
+<td align="left">County: Lehigh</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Luzerne</td>
+<td align="right">0.009</td>
+<td align="right">0.006</td>
+<td align="right">0.013</td>
+</tr>
+<tr class="even">
+<td align="left">County: Lycoming</td>
+<td align="right">1.928</td>
+<td align="right">1.835</td>
+<td align="right">2.027</td>
+</tr>
+<tr class="odd">
+<td align="left">County: McKean</td>
+<td align="right">2.100</td>
+<td align="right">1.962</td>
+<td align="right">2.247</td>
+</tr>
+<tr class="even">
+<td align="left">County: Mercer</td>
+<td align="right">4.624</td>
+<td align="right">4.097</td>
+<td align="right">5.220</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Mifflin</td>
+<td align="right">2.955</td>
+<td align="right">2.633</td>
+<td align="right">3.317</td>
+</tr>
+<tr class="even">
+<td align="left">County: Monroe</td>
+<td align="right">0.005</td>
+<td align="right">0.003</td>
+<td align="right">0.008</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Montgomery</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">County: Montour</td>
+<td align="right">0.569</td>
+<td align="right">0.524</td>
+<td align="right">0.617</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Northampton</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.001</td>
+</tr>
+<tr class="even">
+<td align="left">County: Northumberland</td>
+<td align="right">4.615</td>
+<td align="right">4.222</td>
+<td align="right">5.046</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Perry</td>
+<td align="right">2.062</td>
+<td align="right">1.942</td>
+<td align="right">2.190</td>
+</tr>
+<tr class="even">
+<td align="left">County: Philadelphia</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Pike</td>
+<td align="right">0.414</td>
+<td align="right">0.380</td>
+<td align="right">0.451</td>
+</tr>
+<tr class="even">
+<td align="left">County: Potter</td>
+<td align="right">0.764</td>
+<td align="right">0.716</td>
+<td align="right">0.814</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Schuylkill</td>
+<td align="right">2.328</td>
+<td align="right">2.075</td>
+<td align="right">2.613</td>
+</tr>
+<tr class="even">
+<td align="left">County: Snyder</td>
+<td align="right">1.356</td>
+<td align="right">1.286</td>
+<td align="right">1.430</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Somerset</td>
+<td align="right">2.549</td>
+<td align="right">2.377</td>
+<td align="right">2.734</td>
+</tr>
+<tr class="even">
+<td align="left">County: Sullivan</td>
+<td align="right">0.242</td>
+<td align="right">0.221</td>
+<td align="right">0.264</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Susquehanna</td>
+<td align="right">1.706</td>
+<td align="right">1.565</td>
+<td align="right">1.860</td>
+</tr>
+<tr class="even">
+<td align="left">County: Tioga</td>
+<td align="right">1.701</td>
+<td align="right">1.612</td>
+<td align="right">1.795</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Union</td>
+<td align="right">0.397</td>
+<td align="right">0.363</td>
+<td align="right">0.434</td>
+</tr>
+<tr class="even">
+<td align="left">County: Venango</td>
+<td align="right">3.482</td>
+<td align="right">3.174</td>
+<td align="right">3.820</td>
+</tr>
+<tr class="odd">
+<td align="left">County: Warren</td>
+<td align="right">1.889</td>
+<td align="right">1.771</td>
+<td align="right">2.015</td>
+</tr>
+<tr class="even">
+<td align="left">County: Washington</td>
+<td align="right">0.952</td>
+<td align="right">0.821</td>
+<td align="right">1.103</td>
+</tr>
+<tr class="odd">
+<td align="left">site_score:countyAllegheny</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="even">
+<td align="left">site_score:countyBerks</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="odd">
+<td align="left">site_score:countyBucks</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="even">
+<td align="left">site_score:countyCarbon</td>
+<td align="right">1.000</td>
+<td align="right">0.990</td>
+<td align="right">1.010</td>
+</tr>
+<tr class="odd">
+<td align="left">site_score:countyChester</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="even">
+<td align="left">site_score:countyDelaware</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="odd">
+<td align="left">site_score:countyErie</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="even">
+<td align="left">site_score:countyFranklin</td>
+<td align="right">1.000</td>
+<td align="right">0.993</td>
+<td align="right">1.007</td>
+</tr>
+<tr class="odd">
+<td align="left">site_score:countyLancaster</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="even">
+<td align="left">site_score:countyLehigh</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="odd">
+<td align="left">site_score:countyMercer</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.003</td>
+</tr>
+<tr class="even">
+<td align="left">site_score:countyMonroe</td>
+<td align="right">1.000</td>
+<td align="right">0.996</td>
+<td align="right">1.004</td>
+</tr>
+<tr class="odd">
+<td align="left">site_score:countyMontgomery</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="even">
+<td align="left">site_score:countyNorthampton</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="odd">
+<td align="left">site_score:countyPhiladelphia</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+<tr class="even">
+<td align="left">site_score:countyYork</td>
+<td align="right">1.000</td>
+<td align="right">0.998</td>
+<td align="right">1.002</td>
+</tr>
+</tbody>
+</table>
+<p>#Model Fit</p>
+<p>We opted to investigate model fit through analyzing over dispersion.
+We did not find over dispersion to be an issue in our estimate.</p>
+<pre class="r"><code>  combined_data_final%&gt;% 
+  glm(asthma_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = &#39;log&#39;))%&gt;%
+  dispersiontest(trafo = 1) %&gt;% 
+  broom::tidy() %&gt;% 
+  dplyr::select(estimate, p.value)%&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">estimate</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-1</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>#Conclusion</p>
+<p>Similarly to cancer regression we found that Superfund sites may not
+be a primary factor in the difference between cancer sites as our
+interaction term involving superfund sites and counties with cancer were
+found to be insignificant. This evidence suggests that there are other
+factors such as Socioeconomic Status that may be better Social
+Determinant of Health rather than purely environmental determinants.</p>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
