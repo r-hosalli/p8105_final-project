@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Analysis of Superfunds and Asthma and Cancer Prevalence in PA"
+title: "Exploratory Analysis of Superfunds in Pennsylvania"
 output: html_document
 ---
 
@@ -25,7 +25,6 @@ scale_fill_discrete = scale_fill_viridis_d
 ```
 
 
-
 ```{r plot 1, echo= FALSE, message=FALSE, warning=FALSE}
 superfund_sites =
   read_csv("./data/superfund_NPL_sites.csv") %>% 
@@ -41,6 +40,7 @@ superfund_by_county =
     county = as.factor(county)) %>%
   as.data.frame(superfund_by_county)
 
+superfund_count =
 ggplot(superfund_by_county,
 aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = county)) + 
   geom_bar(stat = "identity") +
@@ -53,61 +53,49 @@ aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = c
   ) +
   ggtitle("Pennsylvania: Number of Superfund Sites per County")
 
+ggplotly (superfund_count)
 ```
 
-
-
-```{r plot 2, echo=FALSE, message=FALSE, warning=FALSE}
-health_outcomes = 
-  read_csv("./data/PLACES_County_2022.csv") %>% 
+```{r table, echo= FALSE, message=FALSE, warning=FALSE}
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
   janitor::clean_names() %>% 
-  rename(county = county_name, state = state_abbr) %>% 
-  mutate(
-    county = as.factor(county)
-  ) %>% 
-  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci ) %>% 
-  filter(state == "PA") %>%
-  mutate(asthma_ci = str_remove_all(casthma_crude95ci, '[()]'),
-         cancer_ci = str_remove_all(cancer_crude95ci, '[()]')) %>%
-  select(-casthma_crude95ci,-cancer_crude95ci) %>%
-  separate(asthma_ci, into = c("asthma_lower", "asthma_upper"), sep = ",") %>%
-   separate(cancer_ci, into = c("cancer_lower", "cancer_upper"), sep = ",") %>%
-  mutate(
-    asthma_lower = as.numeric(asthma_lower),
-    asthma_upper = as.numeric(asthma_upper),
-    cancer_lower = as.numeric(cancer_lower),
-    cancer_upper = as.numeric(cancer_upper)
-  )
-  
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")
 
-ggplot(health_outcomes,
-aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = county)) + 
-  geom_point() +
-  geom_errorbar(aes(ymin = asthma_lower, ymax = asthma_upper)) +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-    legend.position = "none") +
-   labs(
-    x = " ",
-    y = "Crude Asthma Prevalence"
-  ) +
-  ggtitle("Prevalence of Asthma Among Adults 18+ by County 2020")
+superfund_score =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(
+    n_superfund = n(),
+    mean_score = mean(site_score)) %>% 
+  mutate(
+    county = as.factor(county)) %>% 
+  arrange(desc(mean_score)) 
 ```
 
-```{r plot 3, echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(health_outcomes,
-aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = county)) + 
-  geom_point() +
-  geom_errorbar(aes(ymin = cancer_lower, ymax = cancer_upper)) +
-  theme(
-    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
-    legend.position = "none") +
-   labs(
-    x = " ",
-    y = "Crude Cancer Prevalence"
-  ) +
-  ggtitle("Prevalence of Cancer Among Adults 18+ by County 2020")
+```{r plot 4, echo= FALSE, message=FALSE, warning=FALSE}
+superfund_score %>%
+knitr::kable(digits = 3,
+             col.names = c('County', 'Number of Superfunds', 'Mean Site Score'))
 
+superfund_score %>% 
+  plot_ly(x = ~county, y = ~mean_score, color = ~county, type = "bar", colors = "viridis") %>%
+ layout(
+   xaxis = list(categoryorder = "total descending", title = "County"),
+   title = "Mean Superfund Site Score by County ",
+   yaxis = list(title = "Mean Score"))
+```
+
+```{r plot 5, echo= FALSE, message=FALSE, warning=FALSE}
+superfund_geo =
+  superfund_sites %>% 
+  select(site_name, site_score, latitude, longitude) %>% 
+  ggplot(aes(x = latitude, y = longitude, color = site_score)) +
+  geom_point(alpha = 0.25) +
+  coord_cartesian()
+
+ggplotly(superfund_geo)
 ```
 
 

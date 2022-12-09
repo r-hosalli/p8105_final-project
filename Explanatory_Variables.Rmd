@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Analysis of Explanatory Variables "
+title: "Exploratory Analysis of Health Outcomes "
 output: html_document
 ---
 
@@ -23,37 +23,57 @@ options(
 scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
-```{r table, echo= FALSE, message=FALSE, warning=FALSE}
-superfund_sites =
-  read_csv("./data/superfund_NPL_sites.csv") %>% 
+```{r plot 2, echo=FALSE, message=FALSE, warning=FALSE}
+health_outcomes = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
   janitor::clean_names() %>% 
-  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date) %>% 
-  filter(status == "NPL Site")
-
-superfund_score =
-  superfund_sites %>% 
-  group_by(county) %>% 
-  summarize(
-    n_superfund = n(),
-    mean_score = mean(site_score)) %>% 
+  rename(county = county_name, state = state_abbr) %>% 
   mutate(
-    county = as.factor(county)) %>% 
-  arrange(desc(mean_score)) 
+    county = as.factor(county)
+  ) %>% 
+  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci ) %>% 
+  filter(state == "PA") %>%
+  mutate(asthma_ci = str_remove_all(casthma_crude95ci, '[()]'),
+         cancer_ci = str_remove_all(cancer_crude95ci, '[()]')) %>%
+  select(-casthma_crude95ci,-cancer_crude95ci) %>%
+  separate(asthma_ci, into = c("asthma_lower", "asthma_upper"), sep = ",") %>%
+   separate(cancer_ci, into = c("cancer_lower", "cancer_upper"), sep = ",") %>%
+  mutate(
+    asthma_lower = as.numeric(asthma_lower),
+    asthma_upper = as.numeric(asthma_upper),
+    cancer_lower = as.numeric(cancer_lower),
+    cancer_upper = as.numeric(cancer_upper)
+  )
+  
 
+ggplot(health_outcomes,
+aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = county)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin = asthma_lower, ymax = asthma_upper)) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    legend.position = "none") +
+   labs(
+    x = " ",
+    y = "Crude Asthma Prevalence"
+  ) +
+  ggtitle("Prevalence of Asthma Among Adults 18+ by County 2020")
 ```
 
-```{r plot 4, echo= FALSE, message=FALSE, warning=FALSE}
-superfund_score %>%
-knitr::kable(digits = 3,
-             col.names = c('County', 'Number of Superfunds', 'Mean Site Score'))
+```{r plot 3, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(health_outcomes,
+aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = county)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin = cancer_lower, ymax = cancer_upper)) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    legend.position = "none") +
+   labs(
+    x = " ",
+    y = "Crude Cancer Prevalence"
+  ) +
+  ggtitle("Prevalence of Cancer Among Adults 18+ by County 2020")
 
-superfund_score %>% 
-  plot_ly(x = ~county, y = ~mean_score, color = ~county, type = "bar", colors = "viridis") %>%
- layout(
-   xaxis = list(categoryorder = "total descending", title = "County"),
-   title = "Mean Superfund Site Score by County ",
-   yaxis = list(title = "Mean Score"))
- 
 ```
 
 
