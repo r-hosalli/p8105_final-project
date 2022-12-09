@@ -53,7 +53,7 @@ aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = c
   ) +
   ggtitle("Pennsylvania: Number of Superfund Sites per County")
 
-ggplotly (superfund_count)
+ggplotly(superfund_count)
 ```
 
 ```{r table, echo= FALSE, message=FALSE, warning=FALSE}
@@ -74,7 +74,7 @@ superfund_score =
   arrange(desc(mean_score)) 
 ```
 
-```{r plot 4, echo= FALSE, message=FALSE, warning=FALSE}
+```{r plot 2, echo= FALSE, message=FALSE, warning=FALSE}
 superfund_score %>%
 knitr::kable(digits = 3,
              col.names = c('County', 'Number of Superfunds', 'Mean Site Score'))
@@ -87,13 +87,19 @@ superfund_score %>%
    yaxis = list(title = "Mean Score"))
 ```
 
-```{r plot 5, echo= FALSE, message=FALSE, warning=FALSE}
+
+```{r plot 3, echo= FALSE, message=FALSE, warning=FALSE}
 superfund_geo =
   superfund_sites %>% 
   select(site_name, site_score, latitude, longitude) %>% 
   ggplot(aes(x = latitude, y = longitude, color = site_score)) +
   geom_point(alpha = 0.25) +
-  coord_cartesian()
+  coord_cartesian() +
+  labs(
+    x = "Latitude",
+    y = "Longitude"
+  ) +
+  ggtitle("Location of Superfund with Site Score")
 
 ggplotly(superfund_geo)
 ```

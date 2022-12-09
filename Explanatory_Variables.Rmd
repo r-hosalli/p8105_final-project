@@ -23,7 +23,7 @@ options(
 scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
-```{r plot 2, echo=FALSE, message=FALSE, warning=FALSE}
+```{r plot 4, echo=FALSE, message=FALSE, warning=FALSE}
 health_outcomes = 
   read_csv("./data/PLACES_County_2022.csv") %>% 
   janitor::clean_names() %>% 
@@ -60,7 +60,8 @@ aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = cou
   ggtitle("Prevalence of Asthma Among Adults 18+ by County 2020")
 ```
 
-```{r plot 3, echo=FALSE, message=FALSE, warning=FALSE}
+
+```{r plot 5, echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(health_outcomes,
 aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = county)) + 
   geom_point() +
@@ -76,5 +77,97 @@ aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = count
 
 ```
 
+
+```{r plot 6, echo=FALSE, message=FALSE, warning=FALSE}
+health_prev = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
+  janitor::clean_names() %>% 
+  rename(county = county_name, state = state_abbr) %>% 
+  mutate(
+    county = as.factor(county)
+  )  %>% 
+  filter(state == "PA") %>% 
+  select(state, county,casthma_crude_prev,cancer_crude_prev,
+         csmoking_crude_prev,depression_crude_prev,access2_crude_prev)
+
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")
+
+superfund_score =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(
+    n_superfund = n(),
+    mean_score = mean(site_score)) %>% 
+  mutate(
+    county = as.factor(county)) %>% 
+  arrange(desc(mean_score)) 
+
+health_score = 
+  full_join(superfund_score, health_prev, by = "county") %>% 
+  drop_na()
+
+  
+  
+  
+Asthma_Smoking =
+health_prev %>% 
+  select(county,csmoking_crude_prev,casthma_crude_prev) %>%
+  ggplot(
+    aes(x = csmoking_crude_prev,y = casthma_crude_prev)) + 
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Smoking Prevalence ",
+    y = "Crude Asthma Prevalence"
+  ) 
+
+Asthma_Smoking
+
+Asthma_Depression =
+health_prev %>% 
+  select(county,depression_crude_prev,casthma_crude_prev) %>%
+  ggplot(
+    aes(x = depression_crude_prev,y = casthma_crude_prev)) + 
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Depression Prevalence ",
+    y = "Crude Asthma Prevalence"
+  ) 
+
+Asthma_Depression
+
+Asthma_Access =
+health_prev %>% 
+  select(county,access2_crude_prev,casthma_crude_prev) %>%
+  ggplot(
+    aes(x = access2_crude_prev,y = casthma_crude_prev)) + 
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Prevalence of Lack of Insurance",
+    y = "Crude Asthma Prevalence"
+  ) 
+
+Asthma_Access 
+
+Asthma_Score =
+  health_score %>% 
+   select(county,mean_score,casthma_crude_prev) %>%
+  ggplot(
+    aes(x = mean_score,y = casthma_crude_prev)) + 
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Mean of SuperFund Site Score In Each County",
+    y = "Crude Asthma Prevalence"
+  ) 
+ 
+Asthma_Score 
+```
 
 
