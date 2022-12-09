@@ -38,7 +38,7 @@ h1.title {
 
 &nbsp;
 
-The main health outcomes of interest are asthma and cancer, since we hypothesize that residents who live in counties with Superfund sites are more likely to be exposed to hazardous waste which will increase their risk of cancer and asthma. Other variables we are interested in exploring are lack of health insurance, smoking, and depression along with mean site score of the Superfunds in the county.
+The main health outcomes of interest are asthma and cancer, since we hypothesize that residents who live in counties with Superfund sites are more likely to be exposed to hazardous waste which will increase their risk of cancer and asthma. Other variables we are interested in exploring are lack of health insurance, smoking, and depression along with the mean site score of the Superfunds in each county.
 
 &nbsp;
 ```{r plot 4, message=FALSE, warning=FALSE}
@@ -71,18 +71,20 @@ ggplot(health_outcomes,
 aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = county)) + 
   geom_point() +
   geom_errorbar(aes(ymin = asthma_lower, ymax = asthma_upper)) +
+  geom_hline(yintercept = 9.7, color = "red") +
   theme(
     axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     legend.position = "none") +
    labs(
+    title = "Prevalence of Asthma Among Adults 18+ by County 2020",
+    caption = "Red Line: national asthma prevalence calculated from national dataset",
     x = " ",
-    y = "Crude Asthma Prevalence"
-  ) +
-  ggtitle("Prevalence of Asthma Among Adults 18+ by County 2020")
+    y = "Crude Asthma Prevalence") 
 
 ggplotly(asthma_plot)
-```
 
+```
+** Red Line: national asthma prevalence calculated from national dataset with all states.
 
 ```{r plot 5, message=FALSE, warning=FALSE}
 
@@ -93,18 +95,19 @@ ggplot(health_outcomes,
 aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = county)) + 
   geom_point() +
   geom_errorbar(aes(ymin = cancer_lower, ymax = cancer_upper)) +
+  geom_hline(yintercept = 5.6, color = "red") +
   theme(
     axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
     legend.position = "none") +
-   labs(
+  labs(
+    title = "Prevalence of Cancer Among Adults 18+ by County 2020",
+    caption = "Red Line: national cancer prevalence calculated from national dataset",
     x = " ",
-    y = "Crude Cancer Prevalence"
-  ) +
-  ggtitle("Prevalence of Cancer Among Adults 18+ by County 2020")
+    y = "Crude Cancer Prevalence") 
 
 ggplotly(cancer_plot)
 ```
-
+** Red Line: national cancer prevalence calculated from CDC dataset with all states.
 
 ```{r plot 6, message=FALSE, warning=FALSE}
 
