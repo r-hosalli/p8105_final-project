@@ -1,6 +1,10 @@
 ---
-title: "Exploratory Analysis of Health Outcomes "
-output: html_document
+title: "Exploratory Analysis of Pennsylvania Health Outcomes"
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -23,7 +27,21 @@ options(
 scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
-```{r plot 4, echo=FALSE, message=FALSE, warning=FALSE}
+
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+
+&nbsp;
+
+The main health outcomes of interest are asthma and cancer, since we hypothesize that residents who live in counties with Superfund sites are more likely to be exposed to hazardous waste which will increase their risk of cancer and asthma. Other variables we are interested in exploring are lack of health insurance, smoking, and depression along with mean site score of the Superfunds in the county.
+
+&nbsp;
+```{r plot 4, message=FALSE, warning=FALSE}
 #Data Cleaning to Extract 95% CIs 
 health_outcomes = 
   read_csv("./data/PLACES_County_2022.csv") %>% 
@@ -66,7 +84,7 @@ ggplotly(asthma_plot)
 ```
 
 
-```{r plot 5, echo=FALSE, message=FALSE, warning=FALSE}
+```{r plot 5, message=FALSE, warning=FALSE}
 
 #Crude Cancer Prevalence Plot
 
@@ -88,7 +106,7 @@ ggplotly(cancer_plot)
 ```
 
 
-```{r plot 6, echo=FALSE, message=FALSE, warning=FALSE}
+```{r plot 6, message=FALSE, warning=FALSE}
 
 #data cleaning 
 health_prev = 
@@ -196,7 +214,7 @@ asthma_predict_panel +
   plot_layout(guides = "collect")
 ```
 
-```{r plot 7, echo=FALSE, message=FALSE, warning=FALSE}
+```{r plot 7, message=FALSE, warning=FALSE}
 Cancer_Smoking =
 health_prev %>% 
   select(county,csmoking_crude_prev,cancer_crude_prev) %>%
@@ -261,7 +279,7 @@ cancer_predict_panel +
   ) + 
   plot_layout(guides = "collect")
 ```
-```{r plot 8, echo=FALSE, message=FALSE, warning=FALSE}
+```{r plot 8, message=FALSE, warning=FALSE}
 Access_Score =
   health_score %>% 
    select(county,mean_score,access2_crude_prev) %>%
@@ -278,7 +296,7 @@ Access_Score =
 Access_Score
 ```
 
-```{r plot 9, echo=FALSE, message=FALSE, warning=FALSE}
+```{r plot 9, message=FALSE, warning=FALSE}
 no_superfund = 
   full_join(superfund_score, health_prev, by = "county") %>%
   filter(is.na(n_superfund)) %>%
