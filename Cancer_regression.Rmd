@@ -1,17 +1,11 @@
 ---
-title: "Regression"
-output: github_document
+title: "Cancer Regression"
+output: html_document
 ---
 
 
-```{r}
+```{r, echo=FALSE}
 library(tidyverse)
-library(sf)
-library(tmap)
-library(spgwr)
-library(jtools)
-library(tmaptools)
-library(viridis)
 library(modelr)
 library(mgcv)
 library(ggridges)
@@ -23,7 +17,8 @@ library(naniar)
 library(dplyr) 
 library(broom)
 library(AER)
-
+library(lme4)
+library(optimx)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -65,10 +60,6 @@ health_outcomes =
     cancer_lower = as.numeric(cancer_lower),
     cancer_upper = as.numeric(cancer_upper)
   )
-
-```
-
-```{r}
 superfund_sites =
   read_csv("./data/superfund_NPL_sites.csv") %>% 
   janitor::clean_names() %>% 
@@ -82,9 +73,6 @@ superfund_by_county =
   mutate(
     county = as.factor(county)) %>%
   as.data.frame(superfund_by_county)
-```
-
-```{r}
 combined_data_1 =
   left_join(health_outcomes, superfund_sites, by = "county") 
 
@@ -102,135 +90,117 @@ combined_data_final=
           smoking_population = round((csmoking_crude_prev/100)*total_population),
           depression_population = round((depression_crude_prev/100)*total_population),
           insurance_population = round((access2_crude_prev/100)*total_population),
-          cancer_compared_national_average=if_else(cancer_crude_prev>'6.5', 1,0),
-          )%>%
-  distinct(county,.keep_all = TRUE)
+          cancer_compared_national_average=if_else(cancer_crude_prev>'6.5', 1,0)
+          )
 ```
-
 
 ##Outcome: Cancer Prevalence
 
-The data provided is at the state-level, however it was converted to county-level for the purpose of this model. The outcome of interest is the number of individuals with cancer in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized.No offset term was utilized in the data as count data is modeled.
+The data provided is at the state-level, however it was converted to county-level for the purpose of this model. We were originally given the The outcome of interest is the number of individuals with cancer in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized.No offset term was utilized in the data as count data is modeled. 
 
-#Crude Model: We evaluated 
+#Crude Model
+
+We evaluated the  cancer crude counts (total number of individuals who had cancer by county) with counties with larger urban centers having higher cancer counts Upon running the Poisson regression model with a log link function, we found increased cancer prevalence, with the greatest occurring among Allegheny county (RR: 10.759, 95% CI (10.636, 10.883)). 
+
 ```{r}
-cancer_county_crude = 
   combined_data_final %>% 
-  glm(cancer_population ~ superfund_site*county, data = ., family = poisson())%>%broom::tidy()%>%
+  glm(cancer_population ~ county, data = .,family = poisson(link = 'log'))%>%
+  broom::tidy()%>%
   mutate(
     RR=exp(estimate),
     CI_lower=exp(estimate-1.96*std.error),
-    CI_upper = exp(estimate+1.96*std.error)
-  ) %>% 
-  dplyr::select(term, RR, starts_with("CI")) 
-  
-fit_cancer_city_crude = 
-  combined_data_final %>% 
-  glm(cancer_population ~ superfund_site*city, data = ., family = poisson())%>%broom::tidy()%>%
-  broom::tidy()%>%
-    mutate(
-    RR=exp(estimate),
-    CI_lower=exp(estimate-1.96*std.error),
-    CI_upper = exp(estimate+1.96*std.error)
-  ) %>% 
-  dplyr::select(term, RR, starts_with("CI")) %>% 
-
+    CI_upper = exp(estimate+1.96*std.error),
+    term = str_replace(term, "^county", "County: ")
+  ) %>% dplyr::select(term, RR, starts_with("CI"))%>%
+  filter(RR != 'NA')%>%
+  filter(CI_lower != 'NA')%>%
+  filter(CI_upper != 'NA')%>%
+  knitr::kable(digits = 3)
 ```
-
-```{r}
-fit_logistic_city = 
-  combined_data_final %>%
-   nest(data=-county)%>%
-   mutate(data,models=map(data, ~glm(cancer_population ~ superfund_sites, data = .)),results = map(models, broom::tidy))%>%
-   select(county,results)%>%
-   unnest(cols = results)
-```
-
 
 #Confounder Selection: Analyze these values: 
+
+We hypothesized this was a function of population size in urban cities. We also believed that the cancer counts may have had to do with potentially more toxic superfund sites. Finally, we were interested in the potential for SES (ie access to insurance), behavoral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
+
+`Total Population`
+```{r}
+combined_data_final %>% 
+  glm(cancer_population ~total_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
+
+```
+
+
+`superfund site score`
+```{r}
+combined_data_final %>% 
+  glm(cancer_population ~site_score, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
+```
 
 `Depression`, 
 ```{r}
   combined_data_final %>% 
-  glm(cancer_population ~depression_crude_prev, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
-
+  glm(cancer_population ~depression_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+  knitr::kable(digits = 3)
 ```
 
 `Insurance_Status`, 
 ```{r}
   combined_data_final %>% 
   glm(cancer_population ~ insurance_population, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
 
 ```
 
 `Smoking`
 ```{r}
   combined_data_final %>% 
-  glm(cancer_population ~ csmoking_crude_prev, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
+  glm(cancer_population ~ smoking_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+  knitr::kable(digits = 3)
 
 ```
 
-`site score`
-```{r}
-  combined_data_final %>% 
-  glm(cancer_population ~ site_score, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
-
-```
-
-`Superfund Site`
-```{r}
-  combined_data_final %>% 
-  glm(cancer_population ~ superfund_site, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
-
-```
-
-`Number of Superfund Sites`
-```{r}
-  combined_data_final %>% 
-  glm(cancer_population ~ n_superfund, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
-
-```
-
-`total population`
-```{r}
-  combined_data_final %>% 
-  glm(cancer_population ~ total_population, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
-
-```
-
-`city`
-```{r}
-  combined_data_final %>% 
-  glm(cancer_population ~ city, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
-
-```
 
 #Adjusted Analysis
-```{r}
-fit_cancer_county_adjusted = 
-  combined_data_final %>% 
-  glm(cancer_population ~ insurance_population+depression_population+csmoking_crude_prev, data = .)%>%
-  broom::tidy()
 
-fit_cancer_city_adjusted = 
+After adjustment for these factors we find that our confounding factors (including the interaction term between Superfund_sites and county) are not significant, they do impact the county variables. Notably, when accounting for these variables, Allegheny County no longer is our largest risk ratio but instead Fayette County (RR: 27.051, 95% CI(20.616,35.495)). This would suggest that these factors do indeed impact our measurement of cancer by county. What makes this fascinating is that Fayette County does not have a superfund site, furthering evidence that cancer counts may be due to outside factors not originally in our study.
+
+
+```{r}
   combined_data_final %>% 
-  glm(cancer_population ~ city*insurance_population*depression_population*csmoking_crude_prev, data = .,family = poisson(link='log'))%>%
-  broom::tidy()
+  glm(cancer_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = 'log'))%>%
+  broom::tidy()%>%
+  mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error),
+    term = str_replace(term, "^county", "County: ")
+  ) %>% dplyr::select(term, RR, starts_with("CI"))%>%
+  filter(RR != 'NA')%>%
+  filter(CI_lower != 'NA')%>%
+  filter(CI_upper != 'NA')%>%
+  knitr::kable(digits = 3)
 ```
 
 #Model Fit
+
+We opted to investigate model fit through analyzing over dispersion. We did not find over dispersion to be an issue in our estimate. 
+
 ```{r}
   combined_data_final%>% 
-  glm(cancer_population ~ county, data = .,family = poisson(link='log'))%>% 
+  glm(cancer_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = 'log'))%>%
   dispersiontest(trafo = 1) %>% 
   broom::tidy() %>% 
-  dplyr::select(estimate, p.value) 
+  dplyr::select(estimate, p.value)%>% 
+  knitr::kable(digits = 3)
 ```
+
+#Conclusion
+
+From our regression analysis the initial analysis points that Superfund sites may not be a primary factor in the difference between cancer sites as our interaction term involving superfund sites and counties with cancer were found to be insignificant. This evidence suggests that there are other factors such as Socioeconomic Status that may be better Social Determinant of Health rather than purely environmental determinants.  
