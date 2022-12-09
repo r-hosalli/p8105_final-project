@@ -25,7 +25,7 @@ scale_fill_discrete = scale_fill_viridis_d
 ```
 
 
-```{r plot 1, echo= FALSE, message=FALSE, warning=FALSE}
+```{r plot A, echo= FALSE, message=FALSE, warning=FALSE}
 superfund_sites =
   read_csv("./data/superfund_NPL_sites.csv") %>% 
   janitor::clean_names() %>% 
@@ -56,7 +56,7 @@ aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = c
 ggplotly(superfund_count)
 ```
 
-```{r table, echo= FALSE, message=FALSE, warning=FALSE}
+```{r cleaning, echo= FALSE, message=FALSE, warning=FALSE}
 superfund_sites =
   read_csv("./data/superfund_NPL_sites.csv") %>% 
   janitor::clean_names() %>% 
@@ -70,14 +70,12 @@ superfund_score =
     n_superfund = n(),
     mean_score = mean(site_score)) %>% 
   mutate(
-    county = as.factor(county)) %>% 
+    county = as.factor(county)) %>%
   arrange(desc(mean_score)) 
+  
 ```
 
-```{r plot 2, echo= FALSE, message=FALSE, warning=FALSE}
-superfund_score %>%
-knitr::kable(digits = 3,
-             col.names = c('County', 'Number of Superfunds', 'Mean Site Score'))
+```{r plot 1, echo= FALSE, message=FALSE, warning=FALSE}
 
 superfund_score %>% 
   plot_ly(x = ~county, y = ~mean_score, color = ~county, type = "bar", colors = "viridis") %>%
@@ -85,6 +83,13 @@ superfund_score %>%
    xaxis = list(categoryorder = "total descending", title = "County"),
    title = "Mean Superfund Site Score by County ",
    yaxis = list(title = "Mean Score"))
+
+superfund_top =
+  superfund_score %>% 
+  filter(mean_score >= 47.6) %>%
+  knitr::kable(digits = 3, col.names = c('County', 'Number of Superfunds', 'Mean Site Score'),
+             caption = "Top 5 Counties with Highest Average Superfund Score")
+superfund_top
 ```
 
 

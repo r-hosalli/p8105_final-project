@@ -90,7 +90,7 @@ ggplotly(cancer_plot)
 
 ```{r plot 6, echo=FALSE, message=FALSE, warning=FALSE}
 
-
+#data cleaning 
 health_prev = 
   read_csv("./data/PLACES_County_2022.csv") %>% 
   janitor::clean_names() %>% 
@@ -122,6 +122,7 @@ health_score =
   full_join(superfund_score, health_prev, by = "county") %>% 
   drop_na()
 
+#Asthma vs Smoking
   
 Asthma_Smoking =
 health_prev %>% 
@@ -136,7 +137,7 @@ health_prev %>%
     y = "Crude Asthma Prevalence"
   ) 
 
-Asthma_Smoking
+#Asthma vs Depression
 
 Asthma_Depression =
 health_prev %>% 
@@ -151,7 +152,7 @@ health_prev %>%
     y = "Crude Asthma Prevalence"
   ) 
 
-Asthma_Depression
+#Asthma vs Lack of Insurance Access 
 
 Asthma_Access =
 health_prev %>% 
@@ -166,7 +167,9 @@ health_prev %>%
     y = "Crude Asthma Prevalence"
   ) 
 
-Asthma_Access 
+
+
+#Asthma vs Mean Site Score
 
 Asthma_Score =
   health_score %>% 
@@ -180,9 +183,17 @@ Asthma_Score =
     x = "Mean of SuperFund Site Score In Each County",
     y = "Crude Asthma Prevalence"
   ) 
- 
-Asthma_Score 
 
+asthma_predict_panel = (Asthma_Smoking + Asthma_Depression) / (Asthma_Access + Asthma_Score)
+
+asthma_predict_panel + 
+  plot_annotation(
+    title = "Association Between Asthma Prevalence and Given Predictors",
+    subtitle = " County Level Data") + 
+  theme(
+    legend.position = "bottom"
+  ) + 
+  plot_layout(guides = "collect")
 ```
 
 ```{r plot 7, echo=FALSE, message=FALSE, warning=FALSE}
@@ -199,7 +210,6 @@ health_prev %>%
     y = "Crude Cancer Prevalence"
   ) 
 
-Cancer_Smoking
 
 Cancer_Depression =
 health_prev %>% 
@@ -213,7 +223,6 @@ health_prev %>%
     x = "Crude Depression Prevalence ",
     y = "Crude Cancer Prevalence"
   ) 
-Cancer_Depression
 
 Cancer_Access =
 health_prev %>% 
@@ -227,7 +236,6 @@ health_prev %>%
     x = "Crude Prevalence of Lack of Insurance",
     y = "Crude Cancer Prevalence"
   ) 
-Cancer_Access 
 
 Cancer_Score =
   health_score %>% 
@@ -241,10 +249,36 @@ Cancer_Score =
     x = "Mean of SuperFund Site Score In Each County",
     y = "Crude Cancer Prevalence"
   ) 
-Cancer_Score
+
+cancer_predict_panel = (Cancer_Smoking + Cancer_Depression) / (Cancer_Access + Cancer_Score)
+
+cancer_predict_panel + 
+  plot_annotation(
+    title = "Association Between Xancer Prevalence and Given Predictors",
+    subtitle = " County Level Data") + 
+  theme(
+    legend.position = "bottom"
+  ) + 
+  plot_layout(guides = "collect")
+```
+```{r plot 8, echo=FALSE, message=FALSE, warning=FALSE}
+Access_Score =
+  health_score %>% 
+   select(county,mean_score,access2_crude_prev) %>%
+  ggplot(
+    aes(x = access2_crude_prev,y = mean_score)) + 
+  geom_point(aes(color = county)) + 
+  geom_smooth(method = "lm", se = FALSE) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Prevalence of Lack of Health Insurance",
+    y = "Mean County Superfund Site Score"
+  ) +
+  ggtitle("Association Between Mean Site Score and Lack of Insurance Prevalence")
+Access_Score
 ```
 
-```{r plot 8, echo=FALSE, message=FALSE, warning=FALSE}
+```{r plot 9, echo=FALSE, message=FALSE, warning=FALSE}
 no_superfund = 
   full_join(superfund_score, health_prev, by = "county") %>%
   filter(is.na(n_superfund)) %>%
