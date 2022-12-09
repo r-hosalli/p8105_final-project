@@ -111,8 +111,6 @@ health_score =
   drop_na()
 
   
-  
-  
 Asthma_Smoking =
 health_prev %>% 
   select(county,csmoking_crude_prev,casthma_crude_prev) %>%
@@ -168,6 +166,60 @@ Asthma_Score =
   ) 
  
 Asthma_Score 
+
 ```
 
+```{r plot 7, echo=FALSE, message=FALSE, warning=FALSE}
+Cancer_Smoking =
+health_prev %>% 
+  select(county,csmoking_crude_prev,cancer_crude_prev) %>%
+  ggplot(
+    aes(x = csmoking_crude_prev,y = cancer_crude_prev)) + 
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Smoking Prevalence ",
+    y = "Crude Cancer Prevalence"
+  ) 
 
+Cancer_Smoking
+
+Cancer_Depression =
+health_prev %>% 
+  select(county,depression_crude_prev,cancer_crude_prev) %>%
+  ggplot(
+    aes(x = depression_crude_prev,y = cancer_crude_prev)) + 
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Depression Prevalence ",
+    y = "Crude Cancer Prevalence"
+  ) 
+Cancer_Depression
+
+Cancer_Access =
+health_prev %>% 
+  select(county,access2_crude_prev,cancer_crude_prev) %>%
+  ggplot(
+    aes(x = access2_crude_prev,y = cancer_crude_prev)) + 
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Prevalence of Lack of Insurance",
+    y = "Crude Cancer Prevalence"
+  ) 
+Cancer_Access 
+
+Cancer_Score =
+  health_score %>% 
+   select(county,mean_score,cancer_crude_prev) %>%
+  ggplot(
+    aes(x = mean_score,y = cancer_crude_prev)) + 
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Mean of SuperFund Site Score In Each County",
+    y = "Crude Cancer Prevalence"
+  ) 
+Cancer_Score
+```

@@ -99,7 +99,7 @@ superfund_geo =
     x = "Latitude",
     y = "Longitude"
   ) +
-  ggtitle("Location of Superfund with Site Score")
+  ggtitle("Location of Superunds with Site Score")
 
 ggplotly(superfund_geo)
 ```
