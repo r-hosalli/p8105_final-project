@@ -1,12 +1,21 @@
 ---
-title: "My awesome website"
+title: "Outgassing, Air Quality, & Health Outcomes in Pennsylvania (1980-2020)"
+subtitle: "Vanessa Dinh (vd2407), Rahul Hosalli (rh3064), Armaan Sodhi (as6447), Mindy Tran (mnt2130)"
 output: 
   html_document:
     toc: true
     toc_float: true
-    theme: cerulean
+    theme: sandstone
 ---
 
-# This is Jeff's awesome website
+## Summary Video
 
-![](https://media.giphy.com/media/drXGoW1iudhKw/giphy.gif)
+## Background
+
+Background on project
+
+## Data
+
+## Site Guide
+
+## References

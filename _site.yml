@@ -3,7 +3,7 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: "data_cleaning"
+    - text: "Data Cleaning"
       href: data_cleaning.html
     - icon: fa-envelope fa-lg
       href: mailto:<rh3064@cumc.columbia.edu>
@@ -11,4 +11,4 @@ navbar:
       href: http://github.com/r-hosalli/
 output:
   html_document:
-    theme: cerulean
+    theme: sandstone
