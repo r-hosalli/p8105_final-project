@@ -1,0 +1,236 @@
+---
+title: "Regression"
+output: github_document
+---
+
+
+```{r}
+library(tidyverse)
+library(sf)
+library(tmap)
+library(spgwr)
+library(jtools)
+library(tmaptools)
+library(viridis)
+library(modelr)
+library(mgcv)
+library(ggridges)
+library(patchwork)
+library(lubridate)
+library(splitstackshape)
+library(stringr)
+library(naniar)
+library(dplyr) 
+library(broom)
+library(AER)
+
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 10, 
+  fig.height = 10,
+  out.width = "90%")
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+```{r}
+health_outcomes = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
+  janitor::clean_names() %>% 
+  rename(county = county_name, state = state_abbr) %>% 
+  mutate(
+    county = as.factor(county)
+  ) %>% 
+  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci,access2_crude_prev,depression_crude_prev,csmoking_crude_prev,total_population) %>% 
+  filter(state == "PA") %>%
+  mutate(asthma_ci = str_remove_all(casthma_crude95ci, '[()]'),
+         cancer_ci = str_remove_all(cancer_crude95ci, '[()]')) %>%
+  select(-casthma_crude95ci,-cancer_crude95ci) %>%
+  separate(asthma_ci, into = c("asthma_lower", "asthma_upper"), sep = ",") %>%
+   separate(cancer_ci, into = c("cancer_lower", "cancer_upper"), sep = ",") %>%
+  mutate(
+    asthma_lower = as.numeric(asthma_lower),
+    asthma_upper = as.numeric(asthma_upper),
+    cancer_lower = as.numeric(cancer_lower),
+    cancer_upper = as.numeric(cancer_upper)
+  )
+
+```
+
+```{r}
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date,-x,-y,-state) %>% 
+  filter(status == "NPL Site")
+
+superfund_by_county =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(n_superfund = n()) %>% 
+  mutate(
+    county = as.factor(county)) %>%
+  as.data.frame(superfund_by_county)
+```
+
+```{r}
+combined_data_1 =
+  left_join(health_outcomes, superfund_sites, by = "county") 
+
+combined_data_final=left_join(combined_data_1, superfund_by_county, by = "county")%>% 
+  mutate_at(vars("n_superfund"), ~replace(., is.na(.), 0))
+
+combined_data_final=
+  combined_data_final%>%
+  mutate(
+          site_score =  replace(site_score, is.na(site_score), 0),
+          site_name = replace(site_name, is.na(site_name), "None"),
+          superfund_site = if_else(n_superfund == '0',0, 1),
+          cancer_population = round((cancer_crude_prev/100)*total_population),
+          asthma_population = round((casthma_crude_prev/100)*total_population),
+          smoking_population = round((csmoking_crude_prev/100)*total_population),
+          depression_population = round((depression_crude_prev/100)*total_population),
+          insurance_population = round((access2_crude_prev/100)*total_population),
+          cancer_compared_national_average=if_else(cancer_crude_prev>'6.5', 1,0),
+          )%>%
+  distinct(county,.keep_all = TRUE)
+```
+
+
+##Outcome: Cancer Prevalence
+
+The data provided is at the state-level, however it was converted to county-level for the purpose of this model. The outcome of interest is the number of individuals with cancer in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized.No offset term was utilized in the data as count data is modeled.
+
+#Crude Model: We evaluated 
+```{r}
+cancer_county_crude = 
+  combined_data_final %>% 
+  glm(cancer_population ~ superfund_site*county, data = ., family = poisson())%>%broom::tidy()%>%
+  mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error)
+  ) %>% 
+  dplyr::select(term, RR, starts_with("CI")) 
+  
+fit_cancer_city_crude = 
+  combined_data_final %>% 
+  glm(cancer_population ~ superfund_site*city, data = ., family = poisson())%>%broom::tidy()%>%
+  broom::tidy()%>%
+    mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error)
+  ) %>% 
+  dplyr::select(term, RR, starts_with("CI")) %>% 
+
+```
+
+```{r}
+fit_logistic_city = 
+  combined_data_final %>%
+   nest(data=-county)%>%
+   mutate(data,models=map(data, ~glm(cancer_population ~ superfund_sites, data = .)),results = map(models, broom::tidy))%>%
+   select(county,results)%>%
+   unnest(cols = results)
+```
+
+
+#Confounder Selection: Analyze these values: 
+
+`Depression`, 
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~depression_crude_prev, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+
+```
+
+`Insurance_Status`, 
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ insurance_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+
+```
+
+`Smoking`
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ csmoking_crude_prev, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+
+```
+
+`site score`
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ site_score, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+
+```
+
+`Superfund Site`
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ superfund_site, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+
+```
+
+`Number of Superfund Sites`
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ n_superfund, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+
+```
+
+`total population`
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ total_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+
+```
+
+`city`
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ city, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+
+```
+
+#Adjusted Analysis
+```{r}
+fit_cancer_county_adjusted = 
+  combined_data_final %>% 
+  glm(cancer_population ~ insurance_population+depression_population+csmoking_crude_prev, data = .)%>%
+  broom::tidy()
+
+fit_cancer_city_adjusted = 
+  combined_data_final %>% 
+  glm(cancer_population ~ city*insurance_population*depression_population*csmoking_crude_prev, data = .,family = poisson(link='log'))%>%
+  broom::tidy()
+```
+
+#Model Fit
+```{r}
+  combined_data_final%>% 
+  glm(cancer_population ~ county, data = .,family = poisson(link='log'))%>% 
+  dispersiontest(trafo = 1) %>% 
+  broom::tidy() %>% 
+  dplyr::select(estimate, p.value) 
+```
