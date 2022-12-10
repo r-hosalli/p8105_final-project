@@ -2,14 +2,13 @@ name: "Pennyslvania "
 output_dir: "."
 navbar:
   title: "Home"
- left:
+ right:
     - text: "Exploratory Analyses"
       menu:
         - text: "Superfund Sites"
           href: Superfund_Exploratory_Analysis.html
         - text: "Health Outcomes"
           href: Health_Outcomes_Exploratory_Analysis.html
-      href: Exploratory_Analysis.html
     - text: "Regression Analyses"
       menu:
         - text: "Asthma Regression"
@@ -17,8 +16,6 @@ navbar:
         - text: "Cancer Regression"
           href: Cancer_regression.html
     - text: "Interactive Maps"
-    - icon: fa-envelope fa-lg
-  right:
     - text: "Report"
       href: Report.html
     - icon: fa-github fa-lg

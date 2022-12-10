@@ -7,7 +7,6 @@ output:
     toc_float: true
     theme: sandstone
 ---
-
 &nbsp;
 
 <p align="left">
