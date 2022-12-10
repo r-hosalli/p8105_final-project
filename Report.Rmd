@@ -15,6 +15,18 @@ library(readr)
 library(patchwork)
 library(plotly)
 library(stringr)
+library(modelr)
+library(mgcv)
+library(ggridges)
+library(patchwork)
+library(lubridate)
+library(splitstackshape)
+library(stringr)
+library(naniar)
+library(dplyr) 
+library(broom)
+library(AER)
+
 
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -33,7 +45,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 &nbsp;
 
-## Motivation
+# Motivation
 
 Superfund sites are areas designated by the EPA that are contaminated with hazardous or toxic substances and have potential to release these substances into the environment, adversely affecting human health. The motivation of this project is to evaluate the health effects of living in proximity to a Superfund site, as [1 in 6 Americans](https://housingmatters.urban.org/articles/millions-americans-live-near-toxic-waste-sites-how-does-affect-their-health) currently live near a Superfund site.  In particular, we are interested in the effects residing near a Superfund site on asthma and cancer outcomes, since risk for those two diseases can be influenced by environmental exposures. 
 
@@ -45,13 +57,13 @@ Superfund sites are areas designated by the EPA that are contaminated with hazar
 
 * "The presence of Superfund sites as a determinant of life expectancy in the United States" from Nature Communications- [Link](https://www.nature.com/articles/s41467-021-22249-2)
 
-## Initial Questions 
+### Initial Questions 
 1. Does living in a county with a Superfund increase risk for cancer? 
 2. Does living in a county with a Superfund increase risk for asthma? 
 3. Does county level Superfund site score affect both cancer and asthma outcomes? 
 4. What is the geographic spread of Superfund sites in Pennsylvania? 
 
-## Data
+# Data
 
 #### Source
 * CDC PLACES: Local Data for Better Health: County Data- [Link](https://chronicdata.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2022-releas/i46a-9kgh)
@@ -64,13 +76,292 @@ Superfund sites are areas designated by the EPA that are contaminated with hazar
 
 ##### Cleaning 
 
-## Exploratory Analysis
+# Exploratory Analysis
 
 
-## Regression Analysis
+# Regression Analysis
+
+Due to the evidence from the exploratory analysis suggesting that there was no relationship between prevalence rates and counties. Thus, instead the prevalance rates were converted to cancer counts (the CDC derived these prevalence counts through taking the total number of individuals who had the disease divided by total number of individuals in the county) and utilizing a poisson regression. As there was no time component no offset variable was utilized. 
+```{r}
+health_outcomes = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
+  janitor::clean_names() %>% 
+  rename(county = county_name, state = state_abbr) %>% 
+  mutate(
+    county = as.factor(county)
+  ) %>% 
+  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci,access2_crude_prev,depression_crude_prev,csmoking_crude_prev,total_population) %>% 
+  filter(state == "PA") %>%
+  mutate(asthma_ci = str_remove_all(casthma_crude95ci, '[()]'),
+         cancer_ci = str_remove_all(cancer_crude95ci, '[()]')) %>%
+  select(-casthma_crude95ci,-cancer_crude95ci) %>%
+  separate(asthma_ci, into = c("asthma_lower", "asthma_upper"), sep = ",") %>%
+   separate(cancer_ci, into = c("cancer_lower", "cancer_upper"), sep = ",") %>%
+  mutate(
+    asthma_lower = as.numeric(asthma_lower),
+    asthma_upper = as.numeric(asthma_upper),
+    cancer_lower = as.numeric(cancer_lower),
+    cancer_upper = as.numeric(cancer_upper)
+  )
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date,-x,-y,-state) %>% 
+  filter(status == "NPL Site")
+
+superfund_by_county =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(n_superfund = n()) %>% 
+  mutate(
+    county = as.factor(county)) %>%
+  as.data.frame(superfund_by_county)
+combined_data_1 =
+  left_join(health_outcomes, superfund_sites, by = "county") 
+
+combined_data_final=left_join(combined_data_1, superfund_by_county, by = "county")%>% 
+  mutate_at(vars("n_superfund"), ~replace(., is.na(.), 0))
+
+combined_data_final=
+  combined_data_final%>%
+  mutate(
+          site_score =  replace(site_score, is.na(site_score), 0),
+          site_name = replace(site_name, is.na(site_name), "None"),
+          superfund_site = if_else(n_superfund == '0',0, 1),
+          cancer_population = round((cancer_crude_prev/100)*total_population),
+          asthma_population = round((casthma_crude_prev/100)*total_population),
+          smoking_population = round((csmoking_crude_prev/100)*total_population),
+          depression_population = round((depression_crude_prev/100)*total_population),
+          insurance_population = round((access2_crude_prev/100)*total_population),
+          cancer_compared_national_average=if_else(cancer_crude_prev>'6.5', 1,0)
+          )
+```
+
+## Cancer
+
+The data provided is at the state-level, however it was converted to county-level for the purpose of this model. The outcome of interest is the number of individuals with cancer in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized. No offset term was utilized in the data as count data is modeled. 
+
+### Crude Model
+
+We evaluated the  cancer crude counts (total number of individuals who had cancer by county) with counties with larger urban centers having higher cancer counts Upon running the Poisson regression model with a log link function, we found increased cancer prevalence, with the greatest occurring among Allegheny county (RR: 10.759, 95% CI (10.636, 10.883)). 
+
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ county, data = .,family = poisson(link = 'log'))%>%
+  broom::tidy()%>%
+  mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error),
+    term = str_replace(term, "^county", "County: ")
+  ) %>% dplyr::select(term, RR, starts_with("CI"))%>%
+  filter(RR != 'NA')%>%
+  filter(CI_lower != 'NA')%>%
+  filter(CI_upper != 'NA')%>%
+  knitr::kable(digits = 3)
+```
+
+### Confounder Selection: Analyze these values: 
+
+We hypothesized this was a function of population size in urban cities. We also believed that the cancer counts may have had to do with potentially more toxic superfund sites. Finally, we were interested in the potential for SES (ie access to insurance), behavoral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
+
+`Total Population`
+```{r}
+combined_data_final %>% 
+  glm(cancer_population ~total_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
+
+```
 
 
-## Discussion 
+`superfund site score`
+```{r}
+combined_data_final %>% 
+  glm(cancer_population ~site_score, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
+```
+
+`Depression`, 
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~depression_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+  knitr::kable(digits = 3)
+```
+
+`Insurance_Status`, 
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ insurance_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
+
+```
+
+`Smoking`
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ smoking_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+  knitr::kable(digits = 3)
+
+```
+
+
+### Adjusted Analysis
+
+After adjustment for these factors we find that our confounding factors (including the interaction term between Superfund_sites and county) are not significant, they do impact the county variables. Notably, when accounting for these variables, Allegheny County no longer is our largest risk ratio but instead Fayette County (RR: 27.051, 95% CI(20.616,35.495)). This would suggest that these factors do indeed impact our measurement of cancer by county. What makes this fascinating is that Fayette County does not have a superfund site, furthering evidence that cancer counts may be due to outside factors not originally in our study.
+
+
+```{r}
+  combined_data_final %>% 
+  glm(cancer_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = 'log'))%>%
+  broom::tidy()%>%
+  mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error),
+    term = str_replace(term, "^county", "County: ")
+  ) %>% dplyr::select(term, RR, starts_with("CI"))%>%
+  filter(RR != 'NA')%>%
+  filter(CI_lower != 'NA')%>%
+  filter(CI_upper != 'NA')%>%
+  knitr::kable(digits = 3)
+```
+
+### Model Fit
+
+We opted to investigate model fit through analyzing over dispersion. We did not find over dispersion to be an issue in our estimate. 
+
+```{r}
+  combined_data_final%>% 
+  glm(cancer_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = 'log'))%>%
+  dispersiontest(trafo = 1) %>% 
+  broom::tidy() %>% 
+  dplyr::select(estimate, p.value)%>% 
+  knitr::kable(digits = 3)
+```
+
+
+## Asthma
+
+The data provided is at the state-level, however it was converted to county-level for the purpose of this model. We were originally given the The outcome of interest is the number of individuals with asthma in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized.No offset term was utilized in the data as count data is modeled. 
+
+## Crude Model
+
+We evaluated the  cancer crude counts (total number of individuals who had asthma by county) with counties with larger urban centers having higher cancer counts Upon running the Poisson regression model with a log link function, we found increased asthma prevalence, with the greatest occurring among Philadelphia county (RR: 18.468, 95% CI (18.280, 18.658)). 
+
+```{r}
+  combined_data_final %>% 
+  glm(asthma_population ~ county, data = .,family = poisson(link = 'log'))%>%
+  broom::tidy()%>%
+  mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error),
+    term = str_replace(term, "^county", "County: ")
+  ) %>% dplyr::select(term, RR, starts_with("CI"))%>%
+  filter(RR != 'NA')%>%
+  filter(CI_lower != 'NA')%>%
+  filter(CI_upper != 'NA')%>%
+  knitr::kable(digits = 3)
+```
+
+### Confounder Selection
+
+We hypothesized this was a function of population size in urban cities. We also believed that the asthma counts may have had to do with potentially more toxic Superfund sites. Finally, we were interested in the potential for SES (IE access to insurance), behavioral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
+
+`Total Population`
+```{r}
+combined_data_final %>% 
+  glm(asthma_population ~total_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
+
+```
+
+
+`superfund site score`
+```{r}
+combined_data_final %>% 
+  glm(asthma_population ~site_score, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
+```
+
+`Depression`, 
+```{r}
+  combined_data_final %>% 
+  glm(asthma_population ~depression_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+  knitr::kable(digits = 3)
+```
+
+`Insurance_Status`, 
+```{r}
+  combined_data_final %>% 
+  glm(asthma_population ~ insurance_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+ knitr::kable(digits = 3)
+
+```
+
+`Smoking`
+```{r}
+  combined_data_final %>% 
+  glm(asthma_population ~ smoking_population, data = .,family = poisson(link='log'))%>%
+  broom::tidy()%>% 
+  knitr::kable(digits = 3)
+
+```
+
+
+### Adjusted Analysis
+
+After adjustment for these factors we find that our confounding factors (including the interaction term between Superfund_sites and county) are not significant, they do impact the county variables. Notably, when accounting for these variables, Philadelphia County no longer is our largest risk ratio but instead Fayette County (RR: 28.362, 95% CI(22.214,36.211)). This would suggest that these factors do indeed impact our measurement of cancer by county. What makes this fascinating is that Fayette County does not have a Superfund site, furthering evidence that cancer counts may be due to outside factors not originally in our study.
+
+
+```{r}
+  combined_data_final %>% 
+  glm(asthma_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = 'log'))%>%
+  broom::tidy()%>%
+  mutate(
+    RR=exp(estimate),
+    CI_lower=exp(estimate-1.96*std.error),
+    CI_upper = exp(estimate+1.96*std.error),
+    term = str_replace(term, "^county", "County: ")
+  ) %>% dplyr::select(term, RR, starts_with("CI"))%>%
+  filter(RR != 'NA')%>%
+  filter(CI_lower != 'NA')%>%
+  filter(CI_upper != 'NA')%>%
+  knitr::kable(digits = 3)
+```
+
+### Model Fit
+
+We opted to investigate model fit through analyzing over dispersion. We did not find over dispersion to be an issue in our estimate. 
+
+```{r}
+  combined_data_final%>% 
+  glm(asthma_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = 'log'))%>%
+  dispersiontest(trafo = 1) %>% 
+  broom::tidy() %>% 
+  dplyr::select(estimate, p.value)%>% 
+  knitr::kable(digits = 3)
+```
+
+
+# Discussion 
+
+## Regression
+
+We find similar results from both the regression of cancer and asthma that likely point towards other factors besides Superfund Site exposure that determine disease status and overall confounded a potential relationships. Pennsylvania as a state has a higher than average prevalence of cancer and asthma (the national average is 6.5 which every county is well above). The number of Superfund sites did not seem to indicate potential cause of disease as well. What would be useful for the future is to produce a model that focuses on the Socioeconomic Status (research currently points towards income status and race/ethnicity as being potential causes as well. If we were to re-run this model and project it would be beneficial to compare Pennsylvania at the state level to other states in the United States to evaluate whether there was a statewide phenomena (such as the aforementioned higher than average cancer/asthma prevalence) instead of looking at the county level. This would explain why the observed confounding factors did not have a relationship with our outcome as well. 
+
+
+
+
 
 
 

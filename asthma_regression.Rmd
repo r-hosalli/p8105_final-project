@@ -1,6 +1,10 @@
 ---
 title: "Asthma Regression"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
 ```{r, echo=FALSE}
@@ -93,11 +97,11 @@ combined_data_final=
           )
 ```
 
-##Outcome: asthma Prevalence
+## Outcome: Asthma Prevalence
 
 The data provided is at the state-level, however it was converted to county-level for the purpose of this model. We were originally given the The outcome of interest is the number of individuals with asthma in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized.No offset term was utilized in the data as count data is modeled. 
 
-#Crude Model
+# Crude Model
 
 We evaluated the  cancer crude counts (total number of individuals who had asthma by county) with counties with larger urban centers having higher cancer counts Upon running the Poisson regression model with a log link function, we found increased asthma prevalence, with the greatest occurring among Philadelphia county (RR: 18.468, 95% CI (18.280, 18.658)). 
 
@@ -117,7 +121,7 @@ We evaluated the  cancer crude counts (total number of individuals who had asthm
   knitr::kable(digits = 3)
 ```
 
-#Confounder Selection: 
+# Confounder Selection
 
 We hypothesized this was a function of population size in urban cities. We also believed that the asthma counts may have had to do with potentially more toxic Superfund sites. Finally, we were interested in the potential for SES (IE access to insurance), behavioral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
 
@@ -166,7 +170,7 @@ combined_data_final %>%
 ```
 
 
-#Adjusted Analysis
+# Adjusted Analysis
 
 After adjustment for these factors we find that our confounding factors (including the interaction term between Superfund_sites and county) are not significant, they do impact the county variables. Notably, when accounting for these variables, Philadelphia County no longer is our largest risk ratio but instead Fayette County (RR: 28.362, 95% CI(22.214,36.211)). This would suggest that these factors do indeed impact our measurement of cancer by county. What makes this fascinating is that Fayette County does not have a Superfund site, furthering evidence that cancer counts may be due to outside factors not originally in our study.
 
@@ -187,7 +191,7 @@ After adjustment for these factors we find that our confounding factors (includi
   knitr::kable(digits = 3)
 ```
 
-#Model Fit
+# Model Fit
 
 We opted to investigate model fit through analyzing over dispersion. We did not find over dispersion to be an issue in our estimate. 
 
@@ -200,6 +204,6 @@ We opted to investigate model fit through analyzing over dispersion. We did not 
   knitr::kable(digits = 3)
 ```
 
-#Conclusion
+# Conclusion
 
 Similarly to cancer regression we found that Superfund sites may not be a primary factor in the difference between cancer sites as our interaction term involving superfund sites and counties with cancer were found to be insignificant. This evidence suggests that there are other factors such as Socioeconomic Status that may be better Social Determinant of Health rather than purely environmental determinants.  
