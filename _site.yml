@@ -3,8 +3,12 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: "Data Cleaning"
-      href: data_cleaning.html
+    - text: "Exploratory Analysis"
+      href: Exploratory_Analysis.html
+    - text: "Asthma Regression"
+      href: asthma_regression.html
+    - text: "Cancer Regression"
+      href: cancer_regression.html
     - icon: fa-envelope fa-lg
       href: mailto:<rh3064@cumc.columbia.edu>
     - icon: fa-github fa-lg
