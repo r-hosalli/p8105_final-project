@@ -1,6 +1,10 @@
 ---
 title: "Exploratory Analysis of Superfunds in Pennsylvania"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -23,9 +27,21 @@ options(
 scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
+<style type="text/css">
 
+h1.title {
+  text-align: center;
+}
 
-```{r plot A, echo= FALSE, message=FALSE, warning=FALSE}
+</style>
+
+&nbsp;
+
+Since 1980, the US has commissioned the EPA to identify potential sites contaminated with hazardous or harmful substances and to take initiative to clean them. Sites added to this list are considered Superfunds.Pennsylvania ranks third for the number of Superfund sites located in the state with [90 total sites](https://www.statista.com/statistics/1147665/number-of-hazardous-waste-sites-in-the-united-states/#:~:text=New%20Jersey%20is%20home%20to,or%20%22Superfund%22%20was%20passed.) as of October 2022. The plots below show the breakdown of superfund sites by location. 
+
+&nbsp;
+
+```{r plot A, message=FALSE, warning=FALSE}
 superfund_sites =
   read_csv("./data/superfund_NPL_sites.csv") %>% 
   janitor::clean_names() %>% 
@@ -55,8 +71,11 @@ aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = c
 
 ggplotly(superfund_count)
 ```
+Of the 67 counties in Pennsylvania, 33 counties contain at least one Superfund site. Montgomery County contains the most Superfund sites by far with 17 total sites, followed by Chester County with 9 sites. The majority of counties only contain 1-2 Superfund sites each. 
 
-```{r cleaning, echo= FALSE, message=FALSE, warning=FALSE}
+&nbsp;
+
+```{r cleaning, message=FALSE, warning=FALSE}
 superfund_sites =
   read_csv("./data/superfund_NPL_sites.csv") %>% 
   janitor::clean_names() %>% 
@@ -72,10 +91,23 @@ superfund_score =
   mutate(
     county = as.factor(county)) %>%
   arrange(desc(mean_score)) 
-  
-```
 
-```{r plot 1, echo= FALSE, message=FALSE, warning=FALSE}
+superfund_stat = 
+  superfund_sites %>%
+  select(state,site_score) %>%
+  summarize(
+    mean_pa = mean(site_score), 
+    min_pa = min(site_score),
+    max_pa = max(site_score)) %>%
+  knitr::kable(digits = 3, col.names = c('Mean Site Score', 'Lowest Site Score', 'Highest Site Score'),
+             caption = "Summary Statistics of PA Superfund Site Scores")
+superfund_stat
+```
+The Hazard Ranking System (HRS) is what the EPA uses to determine the `site_score` and place sites on the National Priorities List, thus classifying them as Superfund sites to work towards clearing up. To be designated as such, the site must have a score greater than 28.5 on a scale of 0 to 100. Among all Superfund sites in Pennsylvania, the average site score is 42.169. The lowest score is 28.58, while the highest is 70.71. 
+
+&nbsp;
+
+```{r plot 1, message=FALSE, warning=FALSE}
 
 superfund_score %>% 
   plot_ly(x = ~county, y = ~mean_score, color = ~county, type = "bar", colors = "viridis") %>%
@@ -84,6 +116,12 @@ superfund_score %>%
    title = "Mean Superfund Site Score by County ",
    yaxis = list(title = "Mean Score"))
 
+```
+From the plot above, we can see that Columbia County is an outlier, where the Superfunds located in its county have an average score of 70.71. The other counties have site scores that are much lower. The next highest average site score are from Cumberland County and Delaware County both with site scores of 50. Jefferson County's Superfund sites collectively have the lowest average site score of 30.22. 
+
+&nbsp;
+
+```{r table 2, message=FALSE, warning=FALSE}
 superfund_top =
   superfund_score %>% 
   filter(mean_score >= 47.6) %>%
@@ -91,25 +129,29 @@ superfund_top =
              caption = "Top 5 Counties with Highest Average Superfund Score")
 superfund_top
 ```
+From this second table, we see that the top 3 counties with the highest average Superfund site scores only contain one Superfund site that has a very high site score. The site score is given based on these factors: likelihood for site to release hazardous substances into the environment, the toxicity and amount of waste, and the number of people affected by the release (EPA). A higher score would hypothetically indicate that the site is likely to be more hazardous.
+
+&nbsp;
 
 
-```{r plot 3, echo= FALSE, message=FALSE, warning=FALSE}
+```{r plot 3, message=FALSE, warning=FALSE}
 superfund_geo =
   superfund_sites %>% 
   select(site_name, site_score, latitude, longitude) %>% 
-  ggplot(aes(x = latitude, y = longitude, color = site_score)) +
+  ggplot(aes(x = longitude, y = latitude , color = site_score)) +
   geom_point(alpha = 0.25) +
   coord_cartesian() +
   labs(
-    x = "Latitude",
-    y = "Longitude"
+    x = "Longitude",
+    y = "Latitude"
   ) +
   ggtitle("Location of Superunds with Site Score")
 
 ggplotly(superfund_geo)
 ```
+Given the cartesian coordinates of the superfunds, we can see that a majority of the Superfunds are located in the Southeastern portion of Pennsylvania and the ones with the highest site scores are also located in that region. 
 
-
+&nbsp;
 
 
 
