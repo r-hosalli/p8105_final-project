@@ -256,7 +256,13 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="data_cleaning.html">Data Cleaning</a>
+  <a href="Exploratory_Analysis.html">Exploratory Analysis</a>
+</li>
+<li>
+  <a href="asthma_regression.html">Asthma Regression</a>
+</li>
+<li>
+  <a href="cancer_regression.html">Cancer Regression</a>
 </li>
 <li>
   <a href="mailto:&lt;rh3064@cumc.columbia.edu&gt;">
@@ -286,7 +292,23 @@ $(document).ready(function () {
 
 
 <p><img src="data_cleaning_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p><img src="data_cleaning_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code># ggplotly(
+# ggplot() +
+#   geom_sf(data = pa_combined, lwd = 1) +
+#    theme(axis.text.x = element_blank(),
+#         axis.text.y = element_blank(),
+#         axis.ticks = element_blank(),
+#         rect = element_blank()) +
+#   ggtitle(&quot;Active NPL Superfund Sites in Pennsylvania, 2022&quot;) +
+#   theme(plot.title = element_text(hjust = 0.5, size = 18)) +
+#   geom_polygon(col = &quot;n_superfund&quot;,
+#               style = &quot;jenks&quot;,
+#               n = 5,
+#               palette = &quot;YlOrBr&quot;,
+#               border.col = &quot;black&quot;,
+#               title = &quot;Superfund Sites&quot;) 
+# )</code></pre>
+<p><img src="data_cleaning_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 
 
 

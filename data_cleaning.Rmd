@@ -10,6 +10,8 @@ library(tidyverse)
 library(sf)
 library(tmap)
 library(tmaptools)
+library(ggmap)
+library(plotly)
 ```
 
 ```{r include = FALSE}
@@ -22,7 +24,7 @@ health_outcomes =
     county = as.factor(county),
     county = str_to_title(county)
   ) %>% 
-  select(county, county_fips, total_population, starts_with("access2"), starts_with("binge"), starts_with("cancer"), starts_with("casthma"), starts_with("smoking"), starts_with("depression"), starts_with("lpa"), starts_with("mhlth"), starts_with("obesity"), geolocation
+  select(county, county_fips, total_population, starts_with("access2"), starts_with("binge"), starts_with("cancer"), starts_with("casthma"), starts_with("smoking"), starts_with("depression"), geolocation
   )
 
 ```
@@ -48,7 +50,9 @@ sf_superfund =
 superfund_by_county =
   superfund_sites %>% 
   group_by(county) %>% 
-  summarize(n_superfund = n()) %>% 
+  summarize(
+    n_superfund = n(),
+    mean_site_score = mean(site_score)) %>% 
   mutate(
     county = as.factor(county)
   )
@@ -71,7 +75,10 @@ pa_county =
 ```{r include = FALSE}
 only_data =
   left_join(health_outcomes, superfund_by_county, by = "county") %>% 
-  mutate_at(vars("n_superfund"), ~replace(., is.na(.), 0))
+  mutate_at(
+    vars("n_superfund", "mean_site_score"), ~replace(., is.na(.), 0)
+  )
+
 pa_combined =
   left_join(pa_county, only_data, by = "county")
   
@@ -90,10 +97,43 @@ tm_shape(pa_county) +
     main.title.position = "center",
     frame = FALSE
   ) +
-  tm_compass(position = c("right", "bottom"), size = 1.3) +
-  tm_scale_bar(position = c("left", "bottom", size = 1.3)) +
+  tm_compass(position = c("right", "bottom"), size = 2) +
+  tm_scale_bar(position = c("left", "bottom", size = 2)) +
   tm_layout(inner.margins = c(0.2, 0.02, 0.02, 0.02))
 
+```
+
+```{r echo = FALSE}
+# ggplotly(
+# ggplot() +
+#   geom_sf(data = pa_county, lwd = 1) +
+#   geom_sf(data = sf_superfund, color = "brown") +
+#    theme(axis.text.x = element_blank(),
+#         axis.text.y = element_blank(),
+#         axis.ticks = element_blank(),
+#         rect = element_blank()) +
+#   ggtitle("Active NPL Superfund Sites in Pennsylvania, 2022") +
+#   theme(plot.title = element_text(hjust = 0.5, size = 18))
+# )
+```
+
+```{r}
+# ggplotly(
+# ggplot() +
+#   geom_sf(data = pa_combined, lwd = 1) +
+#    theme(axis.text.x = element_blank(),
+#         axis.text.y = element_blank(),
+#         axis.ticks = element_blank(),
+#         rect = element_blank()) +
+#   ggtitle("Active NPL Superfund Sites in Pennsylvania, 2022") +
+#   theme(plot.title = element_text(hjust = 0.5, size = 18)) +
+#   geom_polygon(col = "n_superfund",
+#               style = "jenks",
+#               n = 5,
+#               palette = "YlOrBr",
+#               border.col = "black",
+#               title = "Superfund Sites") 
+# )
 ```
 
 
@@ -116,9 +156,10 @@ tm_shape(pa_combined) +
     legend.text.size = 0.6,
     frame = FALSE
   ) +
-  tm_compass(position = c("right", "bottom"), size = 1.1) +
-  tm_scale_bar(position = c("left", "bottom", size = 1.3)) +
+  tm_compass(position = c("right", "bottom"), size = 2) +
+  tm_scale_bar(position = c("left", "bottom", size = 2))+
   tm_layout(inner.margins = c(0.2, 0.02, 0.02, 0.0))
 ```
+
 
 
