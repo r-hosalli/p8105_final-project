@@ -57,32 +57,478 @@ Superfund sites are areas designated by the EPA that are contaminated with hazar
 
 * "The presence of Superfund sites as a determinant of life expectancy in the United States" from Nature Communications- [Link](https://www.nature.com/articles/s41467-021-22249-2)
 
-### Initial Questions 
+## Initial Questions 
 1. Does living in a county with a Superfund increase risk for cancer? 
 2. Does living in a county with a Superfund increase risk for asthma? 
-3. Does county level Superfund site score affect both cancer and asthma outcomes? 
+3. Does county level Superfund site score affect both cancer and asthma outcomes?
 4. What is the geographic spread of Superfund sites in Pennsylvania? 
+
+&nbsp;
 
 # Data
 
-#### Source
-* CDC PLACES: Local Data for Better Health: County Data- [Link](https://chronicdata.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2022-releas/i46a-9kgh)
+### Sources
+* *CDC PLACES: Local Data for Better Health: County Data* - [Link](https://chronicdata.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2022-releas/i46a-9kgh)
 
-* EPA National Priorities List (NPL)- [Link](https://www.epa.gov/superfund/search-superfund-sites-where-you-live)
+* *EPA National Priorities List (NPL)* - [Link](https://www.epa.gov/superfund/search-superfund-sites-where-you-live)
 
-*
+* *Pennsylvania Spatial Data Access*- [Link](https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=24) 
+
+&nbsp;
  
-#### Scraping
+### Variables
+##### *CDC PLACES Dataset*
 
-##### Cleaning 
+**General**
+
+* `county`
+* `state`
+
+**Health Outcomes** 
+
+* `casthma_crude_prev`
+* `casthma_crude95ci`
+* `cancer_crude_prev`
+* `cancer_crude95ci`
+* `csmoking_crude_prev`
+* `depression_crude_prev`
+* `access2_crude_prev` - prevalence of lack of health insurance 
+
+##### *EPA National Priorities List (NPL) Dataset*
+* `county`
+* `latitude`
+* `longitude`
+* `site_score`
+* `n_superfund`
+
+##### *Pennsylvania Spatial Data Access*
+
+This dataset was used as a shapefile for Pennsylvania state and its counties
+
+
+* `county`
+* `fips_count`
+* `shape_leng`
+* `shape_area`
+* `geometry`
+
+&nbsp;
+
+### Data Cleaning
+The CDC PLACES and EPA NPL datasets were cleaned in a similar fashion. Both datasets were in CSV format and imported into R. The variables names were all cleaned, then the variables of interest were selected and renamed if they were not intuitive to the user. Since the CDC dataset was nationwide, we computed the national average prevalence for cancer and asthma,to compare to the prevalence in Pennsylvania state. Then, we filtered the dataset to only include values for Pennsylvania state. For the EPA NPL dataset, the dataset was already isolated to only include sites in Pennsylvania. 
+
+For the exploratory analyses, the two datasets were then joined by `county` and tidy datasets were used to analyze the outcomes between counties with superfunds versus counties without superfunds. 
 
 # Exploratory Analysis
 
+### *EPA National Priorities List (NPL) Data*
+<br> The exploratory analysis for the  EPA NPL dataset was used to give context to the number of Superfund sites in PA, the mean site score, and where they were located geographically. 
+
+&nbsp;
+
+#### **Number of Superfunds by County**
+
+This plot gives an overview of the number of Superfund sites per county contextualizing the distribution of Superfund sites across counties in Pennsylvania. Of the 67 total counties in PA, almost half (33 counties) contain at least one Superfund site. The county with the highest number of sites by far is Montgomery County with 17 total sites. Of the counties that contain a Superfund site, a majority of them only have one site total within their county limits. 
+
+&nbsp;
+
+
+```{r plot A, message=FALSE, warning=FALSE}
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")
+
+superfund_by_county =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(n_superfund = n()) %>% 
+  mutate(
+    county = as.factor(county)) %>%
+  as.data.frame(superfund_by_county)
+
+superfund_count =
+ggplot(superfund_by_county,
+aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = county)) + 
+  geom_bar(stat = "identity") +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+    legend.position = "none") +
+   labs(
+    x = " ",
+    y = "Number of Superfund Sites"
+  ) +
+  ggtitle("Pennsylvania: Number of Superfund Sites per County")
+
+ggplotly(superfund_count)
+```
+
+#### **County Level Mean Superfund Site Score **
+The Hazard Ranking System (HRS) is what the EPA uses to determine the site_score and place sites on the National Priorities List, thus classifying them as Superfund sites to work towards clearing up. To be designated as such, the site must have a score greater than 28.5 on a scale of 0 to 100. This table provides the average site score among all sites in Pennsylvania as well as the lowest and highest site scores. 
+
+&nbsp;
+
+
+```{r cleaning, message=FALSE, warning=FALSE}
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")
+
+superfund_score =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(
+    n_superfund = n(),
+    mean_score = mean(site_score)) %>% 
+  mutate(
+    county = as.factor(county)) %>%
+  arrange(desc(mean_score)) 
+
+superfund_stat = 
+  superfund_sites %>%
+  select(state,site_score) %>%
+  summarize(
+    mean_pa = mean(site_score), 
+    min_pa = min(site_score),
+    max_pa = max(site_score)) %>%
+  knitr::kable(digits = 3, col.names = c('Mean Site Score', 'Lowest Site Score', 'Highest Site Score'),
+             caption = "Summary Statistics of PA Superfund Site Scores")
+superfund_stat
+```
+
+#### **Location of Superfunds in PA **
+We wanted to explore the location of the Superfund sites to determine whether they were randomly distributed or clustered in certain areas in the state of PA. From the plot below, we can see that a majority of the Superfunds are located in the Southeastern portion of Pennsylvania and the ones with the highest site scores are also located in that region. 
+
+&nbsp;
+
+```{r plot 3, message=FALSE, warning=FALSE}
+superfund_geo =
+  superfund_sites %>% 
+  select(site_name, site_score, latitude, longitude) %>% 
+  ggplot(aes(x = longitude, y = latitude , color = site_score)) +
+  geom_point(alpha = 0.25) +
+  coord_cartesian() +
+  labs(
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  ggtitle("Location of Superunds with Site Score")
+
+ggplotly(superfund_geo)
+```
+
+### *CDC PLACES Data*
+
+#### **Asthma and Cancer Prevalence at the County Level**
+
+Since we're interested in asthma and cancer outcomes in PA, we wanted to see the prevalence of cancer and asthma outcomes on the county level for PA. Below are two plots that give the prevalence of cancer and asthma among adults 18+ in each county reported as a percentage. From these two plots, we can see that most counties in PA exceed the national prevalence for both asthma and cancer, which made us interested to explore whether that was because PA ranks third in terms of states with the most Superfund sites. 
+
+```{r plot 4, message=FALSE, warning=FALSE}
+#Data Cleaning to Extract 95% CIs 
+health_outcomes = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
+  janitor::clean_names() %>% 
+  rename(county = county_name, state = state_abbr) %>% 
+  mutate(
+    county = as.factor(county)
+  ) %>% 
+  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci ) %>% 
+  filter(state == "PA") %>%
+  mutate(asthma_ci = str_remove_all(casthma_crude95ci, '[()]'),
+         cancer_ci = str_remove_all(cancer_crude95ci, '[()]')) %>%
+  select(-casthma_crude95ci,-cancer_crude95ci) %>%
+  separate(asthma_ci, into = c("asthma_lower", "asthma_upper"), sep = ",") %>%
+   separate(cancer_ci, into = c("cancer_lower", "cancer_upper"), sep = ",") %>%
+  mutate(
+    asthma_lower = as.numeric(asthma_lower),
+    asthma_upper = as.numeric(asthma_upper),
+    cancer_lower = as.numeric(cancer_lower),
+    cancer_upper = as.numeric(cancer_upper)
+  )
+  
+#Crude Asthma Prevalence Plot
+
+asthma_plot =
+ggplot(health_outcomes,
+aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = county)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin = asthma_lower, ymax = asthma_upper)) +
+  geom_hline(yintercept = 9.7, color = "red") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    legend.position = "none") +
+   labs(
+    title = "Prevalence of Asthma Among Adults 18+ by County 2020",
+    caption = "Red Line: national asthma prevalence calculated from national dataset",
+    x = " ",
+    y = "Crude Asthma Prevalence") 
+
+ggplotly(asthma_plot)
+
+```
+** Red Line: national asthma prevalence calculated from national dataset with all states.
+
+&nbsp;
+
+```{r plot 5, message=FALSE, warning=FALSE}
+
+#Crude Cancer Prevalence Plot
+
+cancer_plot =
+ggplot(health_outcomes,
+aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = county)) + 
+  geom_point() +
+  geom_errorbar(aes(ymin = cancer_lower, ymax = cancer_upper)) +
+  geom_hline(yintercept = 5.6, color = "red") +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+    legend.position = "none") +
+  labs(
+    title = "Prevalence of Cancer Among Adults 18+ by County 2020",
+    caption = "Red Line: national cancer prevalence calculated from national dataset",
+    x = " ",
+    y = "Crude Cancer Prevalence") 
+
+ggplotly(cancer_plot)
+```
+** Red Line: national cancer prevalence calculated from CDC dataset with all states.
+
+&nbsp;
+
+#### **Assessment of Linear Relationship between Cancer and Asthma Outcomes with Other Health Outcomes**
+
+We wanted to see how our outcomes of asthma and cancer prevalence correlated with other health behaviors such as smoking and access to health insurance, in addition to mental health measured via depression. We also wanted to explore whether asthma and cancer prevalence correlated with  mean Superfund Site Score in the county. 
+
+From these four scatter plots with best fit lines grouped by asthma as the dependent variable, smoking prevalence, depression prevalence, and lack of insurance, all have a positive relationship with asthma prevalence on the county level. Mean Superfund site score seems to be more randomly distributed, with a slight downward trend that is likely influenced by the one outlier. 
+
+&nbsp;
+
+
+```{r plot 6, message=FALSE, warning=FALSE}
+
+#data cleaning 
+health_prev = 
+  read_csv("./data/PLACES_County_2022.csv") %>% 
+  janitor::clean_names() %>% 
+  rename(county = county_name, state = state_abbr) %>% 
+  mutate(
+    county = as.factor(county)
+  )  %>% 
+  filter(state == "PA") %>% 
+  select(state, county,casthma_crude_prev,cancer_crude_prev,
+         csmoking_crude_prev,depression_crude_prev,access2_crude_prev)
+
+superfund_sites =
+  read_csv("./data/superfund_NPL_sites.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with("notice"), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date) %>% 
+  filter(status == "NPL Site")
+
+superfund_score =
+  superfund_sites %>% 
+  group_by(county) %>% 
+  summarize(
+    n_superfund = n(),
+    mean_score = mean(site_score)) %>% 
+  mutate(
+    county = as.factor(county)) %>% 
+  arrange(desc(mean_score)) 
+
+health_score = 
+  full_join(superfund_score, health_prev, by = "county") %>% 
+  drop_na()
+
+#Asthma vs Smoking
+  
+Asthma_Smoking =
+health_prev %>% 
+  select(county,csmoking_crude_prev,casthma_crude_prev) %>%
+  ggplot(
+    aes(x = csmoking_crude_prev,y = casthma_crude_prev)) + 
+  geom_point(aes(color = county)) +
+  geom_smooth(method = "lm", se = FALSE) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Smoking Prevalence ",
+    y = "Crude Asthma Prevalence"
+  ) 
+
+#Asthma vs Depression
+
+Asthma_Depression =
+health_prev %>% 
+  select(county,depression_crude_prev,casthma_crude_prev) %>%
+  ggplot(
+    aes(x = depression_crude_prev,y = casthma_crude_prev)) + 
+  geom_point(aes(color = county)) +
+  geom_smooth(method = "lm", se = FALSE) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Depression Prevalence ",
+    y = "Crude Asthma Prevalence"
+  ) 
+
+#Asthma vs Lack of Insurance Access 
+
+Asthma_Access =
+health_prev %>% 
+  select(county,access2_crude_prev,casthma_crude_prev) %>%
+  ggplot(
+    aes(x = access2_crude_prev,y = casthma_crude_prev)) + 
+  geom_point(aes(color = county)) +
+  geom_smooth(method = "lm", se = FALSE) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Prevalence of Lack of Insurance",
+    y = "Crude Asthma Prevalence"
+  ) 
+
+#Asthma vs Mean Site Score
+
+Asthma_Score =
+  health_score %>% 
+   select(county,mean_score,casthma_crude_prev) %>%
+  ggplot(
+    aes(x = mean_score,y = casthma_crude_prev)) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_point(aes(color = county)) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Mean of Superfund Site Score In Each County",
+    y = "Crude Asthma Prevalence"
+  ) 
+
+asthma_predict_panel = (Asthma_Smoking + Asthma_Depression) / (Asthma_Access + Asthma_Score)
+
+asthma_predict_panel + 
+  plot_annotation(
+    title = "Association Between Asthma Prevalence and Given Predictors",
+    subtitle = " County Level Data") + 
+  theme(
+    legend.position = "bottom"
+  ) + 
+  plot_layout(guides = "collect")
+```
+For Cancer Prevalence as the outcome, smoking and depression have a slight positive correlation with ashtma prevalence on the county level. On the other hand, lack of insurance and mean superfund site score seem to have a more random distribution with cancer. The best fit line for these two outcomes show a slight negative correlation but it is likely influenced by the outliers. 
+
+&nbsp;
+
+```{r plot 7, message=FALSE, warning=FALSE}
+Cancer_Smoking =
+health_prev %>% 
+  select(county,csmoking_crude_prev,cancer_crude_prev) %>%
+  ggplot(
+    aes(x = csmoking_crude_prev,y = cancer_crude_prev)) + 
+  geom_point(aes(color = county)) + 
+  geom_smooth(method = "lm", se = FALSE) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Smoking Prevalence ",
+    y = "Crude Cancer Prevalence"
+  ) 
+
+
+Cancer_Depression =
+health_prev %>% 
+  select(county,depression_crude_prev,cancer_crude_prev) %>%
+  ggplot(
+    aes(x = depression_crude_prev,y = cancer_crude_prev)) + 
+  geom_point(aes(color = county)) +
+  geom_smooth(method = "lm", se = FALSE) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Depression Prevalence ",
+    y = "Crude Cancer Prevalence"
+  ) 
+
+Cancer_Access =
+health_prev %>% 
+  select(county,access2_crude_prev,cancer_crude_prev) %>%
+  ggplot(
+    aes(x = access2_crude_prev,y = cancer_crude_prev)) + 
+  geom_point(aes(color = county)) +
+  geom_smooth(method = "lm", se = FALSE) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Crude Prevalence of Lack of Insurance",
+    y = "Crude Cancer Prevalence"
+  ) 
+
+Cancer_Score =
+  health_score %>% 
+   select(county,mean_score,cancer_crude_prev) %>%
+  ggplot(
+    aes(x = mean_score,y = cancer_crude_prev)) + 
+  geom_point(aes(color = county)) + 
+  geom_smooth(method = "lm", se = FALSE) +
+   theme(legend.position = "none") + 
+  labs(
+    x = "Mean of Superfund Site Score In Each County",
+    y = "Crude Cancer Prevalence"
+  ) 
+
+cancer_predict_panel = (Cancer_Smoking + Cancer_Depression) / (Cancer_Access + Cancer_Score)
+
+cancer_predict_panel + 
+  plot_annotation(
+    title = "Association Between Cancer Prevalence and Given Predictors",
+    subtitle = " County Level Data") + 
+  theme(
+    legend.position = "bottom"
+  ) + 
+  plot_layout(guides = "collect")
+```
+
+#### **Comparison of Health Outcomes for Counties With and Without Superfund Sites **
+
+We also wanted to explore if cancer outcomes and asthma outcomes were different based on whether a county had a Superfund in their county lines. Based on the plot below, it seems like the the median values for cancer, asthma, and healthcare access are similar among counties with Superfund sites and counties without Superfund sites in their jurisdiction. 
+
+&nbsp;
+```{r plot 9, message=FALSE, warning=FALSE}
+no_superfund = 
+  full_join(superfund_score, health_prev, by = "county") %>%
+  filter(is.na(n_superfund)) %>%
+  select(n_superfund,casthma_crude_prev,cancer_crude_prev,access2_crude_prev) %>%
+  mutate(has_superfund = "No") %>%
+  select(-n_superfund) %>%
+  mutate(has_superfund = as.factor(has_superfund))
+
+yes_superfund =
+  health_score %>%
+  select(n_superfund,casthma_crude_prev,cancer_crude_prev,access2_crude_prev) %>%
+    mutate(has_superfund = "Yes") %>%
+    select(-n_superfund) %>%
+    mutate(has_superfund = as.factor(has_superfund))
+
+health_superfund =
+  rbind(no_superfund,yes_superfund) %>%
+  pivot_longer(
+    casthma_crude_prev:access2_crude_prev,
+    names_to = "outcome_type", 
+    values_to = "crude_prevalence")
+  
+
+asthma_superfund =
+   health_superfund %>%
+   plot_ly(y = ~crude_prevalence, x = ~has_superfund ,
+           type = "box", color = ~outcome_type) %>% 
+  layout(boxmode = "group") %>% 
+  layout(
+    xaxis = list(title = "Presence of Superfund in County"),
+   title = "Comparison of County Level Cancer, Asthma Prevalence, and Lack of Health Insurance By Superfund Presence",
+   yaxis = list(title = "Crude Prevalence")) 
+
+asthma_superfund 
+```
 
 # Regression Analysis
 
-Due to the evidence from the exploratory analysis suggesting that there was no relationship between prevalence rates and counties. Thus, instead the prevalance rates were converted to cancer counts (the CDC derived these prevalence counts through taking the total number of individuals who had the disease divided by total number of individuals in the county) and utilizing a poisson regression. As there was no time component no offset variable was utilized. 
-```{r}
+Due to the evidence from the exploratory analysis suggesting that there was no apparent relationship between prevalence rates (operationalized as a percentage) and mean site score. Thus, instead the prevalence rates were converted to cancer counts (the CDC derived these prevalence counts through taking the total number of individuals who had the disease divided by total number of individuals in the county) and utilizing a poisson regression. As there was no time component no offset variable was utilized. 
+
+```{r, message = FALSE, warning = FALSE}
 health_outcomes = 
   read_csv("./data/PLACES_County_2022.csv") %>% 
   janitor::clean_names() %>% 
@@ -141,7 +587,7 @@ combined_data_final=
 
 The data provided is at the state-level, however it was converted to county-level for the purpose of this model. The outcome of interest is the number of individuals with cancer in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized. No offset term was utilized in the data as count data is modeled. 
 
-### Crude Model
+#### *Crude Model*
 
 We evaluated the  cancer crude counts (total number of individuals who had cancer by county) with counties with larger urban centers having higher cancer counts Upon running the Poisson regression model with a log link function, we found increased cancer prevalence, with the greatest occurring among Allegheny county (RR: 10.759, 95% CI (10.636, 10.883)). 
 
@@ -161,9 +607,9 @@ We evaluated the  cancer crude counts (total number of individuals who had cance
   knitr::kable(digits = 3)
 ```
 
-### Confounder Selection: Analyze these values: 
+#### *Confounder Selection: Analyze these values:*
 
-We hypothesized this was a function of population size in urban cities. We also believed that the cancer counts may have had to do with potentially more toxic superfund sites. Finally, we were interested in the potential for SES (ie access to insurance), behavoral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
+We hypothesized this was a function of population size in urban cities. We also believed that the cancer counts may have had to do with potentially more toxic superfund sites. Finally, we were interested in the potential for SES (i.e access to insurance), behavioral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
 
 `Total Population`
 ```{r}
@@ -210,7 +656,7 @@ combined_data_final %>%
 ```
 
 
-### Adjusted Analysis
+#### *Adjusted Analysis*
 
 After adjustment for these factors we find that our confounding factors (including the interaction term between Superfund_sites and county) are not significant, they do impact the county variables. Notably, when accounting for these variables, Allegheny County no longer is our largest risk ratio but instead Fayette County (RR: 27.051, 95% CI(20.616,35.495)). This would suggest that these factors do indeed impact our measurement of cancer by county. What makes this fascinating is that Fayette County does not have a superfund site, furthering evidence that cancer counts may be due to outside factors not originally in our study.
 
@@ -231,7 +677,7 @@ After adjustment for these factors we find that our confounding factors (includi
   knitr::kable(digits = 3)
 ```
 
-### Model Fit
+#### *Model Fit*
 
 We opted to investigate model fit through analyzing over dispersion. We did not find over dispersion to be an issue in our estimate. 
 
@@ -247,9 +693,9 @@ We opted to investigate model fit through analyzing over dispersion. We did not 
 
 ## Asthma
 
-The data provided is at the state-level, however it was converted to county-level for the purpose of this model. We were originally given the The outcome of interest is the number of individuals with asthma in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized.No offset term was utilized in the data as count data is modeled. 
+The data provided is at the state-level, however it was converted to county-level for the purpose of this model. We were originally given the outcome of interest is the number of individuals with asthma in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized.No offset term was utilized in the data as count data is modeled. 
 
-## Crude Model
+#### *Crude Model*
 
 We evaluated the  cancer crude counts (total number of individuals who had asthma by county) with counties with larger urban centers having higher cancer counts Upon running the Poisson regression model with a log link function, we found increased asthma prevalence, with the greatest occurring among Philadelphia county (RR: 18.468, 95% CI (18.280, 18.658)). 
 
@@ -269,9 +715,9 @@ We evaluated the  cancer crude counts (total number of individuals who had asthm
   knitr::kable(digits = 3)
 ```
 
-### Confounder Selection
+#### *Confounder Selection*
 
-We hypothesized this was a function of population size in urban cities. We also believed that the asthma counts may have had to do with potentially more toxic Superfund sites. Finally, we were interested in the potential for SES (IE access to insurance), behavioral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
+We hypothesized this was a function of population size in urban cities. We also believed that the asthma counts may have had to do with potentially more toxic Superfund sites. Finally, we were interested in the potential for SES (i.e access to insurance), behavioral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
 
 `Total Population`
 ```{r}
@@ -318,7 +764,7 @@ combined_data_final %>%
 ```
 
 
-### Adjusted Analysis
+#### *Adjusted Analysis*
 
 After adjustment for these factors we find that our confounding factors (including the interaction term between Superfund_sites and county) are not significant, they do impact the county variables. Notably, when accounting for these variables, Philadelphia County no longer is our largest risk ratio but instead Fayette County (RR: 28.362, 95% CI(22.214,36.211)). This would suggest that these factors do indeed impact our measurement of cancer by county. What makes this fascinating is that Fayette County does not have a Superfund site, furthering evidence that cancer counts may be due to outside factors not originally in our study.
 
@@ -339,7 +785,7 @@ After adjustment for these factors we find that our confounding factors (includi
   knitr::kable(digits = 3)
 ```
 
-### Model Fit
+#### *Model Fit*
 
 We opted to investigate model fit through analyzing over dispersion. We did not find over dispersion to be an issue in our estimate. 
 
@@ -355,9 +801,13 @@ We opted to investigate model fit through analyzing over dispersion. We did not 
 
 # Discussion 
 
-## Regression
 
 We find similar results from both the regression of cancer and asthma that likely point towards other factors besides Superfund Site exposure that determine disease status and overall confounded a potential relationships. Pennsylvania as a state has a higher than average prevalence of cancer and asthma (the national average is 6.5 which every county is well above). The number of Superfund sites did not seem to indicate potential cause of disease as well. What would be useful for the future is to produce a model that focuses on the Socioeconomic Status (research currently points towards income status and race/ethnicity as being potential causes as well. If we were to re-run this model and project it would be beneficial to compare Pennsylvania at the state level to other states in the United States to evaluate whether there was a statewide phenomena (such as the aforementioned higher than average cancer/asthma prevalence) instead of looking at the county level. This would explain why the observed confounding factors did not have a relationship with our outcome as well. 
+
+### Limitations
+
+From doing more research after our findings, living near a Superfund site is shown to have adverse health effects within a 1.8 mile radius of a Superfund site. While the EPA data had exact coordinates, the CDC data did not and only provided the data on a county level. Data on the Cartesian coordinate level for health outcomes is likely not possible since it would provide a lot of data that would work against the data de-identification rules for health data.
+
 
 
 
