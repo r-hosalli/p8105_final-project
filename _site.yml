@@ -2,7 +2,7 @@ name: "Pennyslvania "
 output_dir: "."
 navbar:
   title: "Home"
- right:
+  right:
     - text: "Exploratory Analyses"
       menu:
         - text: "Superfund Sites"
