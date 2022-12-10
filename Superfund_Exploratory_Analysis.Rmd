@@ -13,7 +13,6 @@ library(ggplot2)
 library(readr)
 library(patchwork)
 library(plotly)
-library(lubridate)
 library(stringr)
 
 knitr::opts_chunk$set(echo = TRUE)

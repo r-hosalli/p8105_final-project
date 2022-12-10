@@ -1,11 +1,84 @@
 ---
-title: "Report"
+title: "Project Report"
 author: "Mindy Tran, Vanessa Dinh, Rahul Hosalli, Armaan Sodhi"
-date: "2022-12-09"
-output: html_document
+output: 
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(patchwork)
+library(plotly)
+library(stringr)
+
 knitr::opts_chunk$set(echo = TRUE)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
+
+<style type="text/css">
+</style>
+
+&nbsp;
+
+## Motivation
+
+Superfund sites are areas designated by the EPA that are contaminated with hazardous or toxic substances and have potential to release these substances into the environment, adversely affecting human health. The motivation of this project is to evaluate the health effects of living in proximity to a Superfund site, as [1 in 6 Americans](https://housingmatters.urban.org/articles/millions-americans-live-near-toxic-waste-sites-how-does-affect-their-health) currently live near a Superfund site.  In particular, we are interested in the effects residing near a Superfund site on asthma and cancer outcomes, since risk for those two diseases can be influenced by environmental exposures. 
+
+&nbsp;
+
+## Related Motivating Sources 
+
+* "Millions of Americans Live Near Toxic Waste Sites. How Does This Affect Their Health?" from Housing Matters- [Link](https://housingmatters.urban.org/articles/millions-americans-live-near-toxic-waste-sites-how-does-affect-their-health)
+
+* "The presence of Superfund sites as a determinant of life expectancy in the United States" from Nature Communications- [Link](https://www.nature.com/articles/s41467-021-22249-2)
+
+## Initial Questions 
+1. Does living in a county with a Superfund increase risk for cancer? 
+2. Does living in a county with a Superfund increase risk for asthma? 
+3. Does county level Superfund site score affect both cancer and asthma outcomes? 
+4. What is the geographic spread of Superfund sites in Pennsylvania? 
+
+## Data
+
+#### Source
+* CDC PLACES: Local Data for Better Health: County Data- [Link](https://chronicdata.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2022-releas/i46a-9kgh)
+
+* EPA National Priorities List (NPL)- [Link](https://www.epa.gov/superfund/search-superfund-sites-where-you-live)
+
+*
+ 
+#### Scraping
+
+##### Cleaning 
+
+## Exploratory Analysis
+
+
+## Regression Analysis
+
+
+## Discussion 
+
+
+
+
+
+
+
+
+
+
 
