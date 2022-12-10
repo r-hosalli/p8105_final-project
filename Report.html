@@ -423,20 +423,31 @@ Pennsylvania?</li>
 </div>
 <div id="data" class="section level1">
 <h1>Data</h1>
-<div id="source" class="section level4">
-<h4>Source</h4>
+<div id="sources" class="section level4">
+<h4>Sources</h4>
+<p>The data sets used were all publicly available from either federal or
+state governmental websites. Data on the exposure of interest were
+gathered from the EPA National Priorities List for the number and
+geographical locations of current superfund sites by county level in
+Pennsylvania. Asthma and cancer prevalences along with confounding
+factors of smoking, depression, and insurance status came from the CDC
+PLACES dataset. In order to map locations of superfund sites
+geographically, a shapefile for the state of Pennsylvania was downloaded
+from the Pennsylvania Spatial Data Access website. All datasets can be
+found at the links below.</p>
 <ul>
 <li><p>CDC PLACES: Local Data for Better Health: County Data- <a
 href="https://chronicdata.cdc.gov/500-Cities-Places/PLACES-County-Data-GIS-Friendly-Format-2022-releas/i46a-9kgh">Link</a></p></li>
 <li><p>EPA National Priorities List (NPL)- <a
 href="https://www.epa.gov/superfund/search-superfund-sites-where-you-live">Link</a></p></li>
-<li></li>
+<li><p>Pennsylvania Geospatial Data Access (PASDA): <a
+href="https://www.pasda.psu.edu/uci/DataSummary.aspx?dataset=24">Link</a></p></li>
 </ul>
-</div>
-<div id="scraping" class="section level4">
-<h4>Scraping</h4>
 <div id="cleaning" class="section level5">
 <h5>Cleaning</h5>
+<p>All datasets were available as either a CSV file or a shapefile, so
+no data scraping was necessary for our analysis. Each dataset was
+cleaned to focus on our variables of interest within Pennsylvania.</p>
 </div>
 </div>
 </div>
@@ -970,10 +981,10 @@ class="section level3">
 <p>We hypothesized this was a function of population size in urban
 cities. We also believed that the cancer counts may have had to do with
 potentially more toxic superfund sites. Finally, we were interested in
-the potential for SES (ie access to insurance), behavoral factors like
-smoking, and health attributes like asthma could potentially confound
-our study.Therefore, we opted to explore whether county population size
-was impacting this relationship.</p>
+the potential for SES (ie access to insurance), behavioral factors like
+smoking, and health attributes like depression could potentially
+confound our study.Therefore, we opted to explore whether county
+population size was impacting this relationship.</p>
 <p><code>Total Population</code></p>
 <pre class="r"><code>combined_data_final %&gt;% 
   glm(cancer_population ~total_population, data = .,family = poisson(link=&#39;log&#39;))%&gt;%

@@ -11,12 +11,12 @@
 
 
 
-<title>My awesome website</title>
+<title>Outgassing, Air Quality, &amp; Health Outcomes in Pennsylvania (1980-2020)</title>
 
-<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -183,8 +183,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -192,9 +192,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -324,7 +331,13 @@ div.tocify {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="data_cleaning.html">data_cleaning</a>
+  <a href="Exploratory_Analysis.html">Exploratory Analysis</a>
+</li>
+<li>
+  <a href="asthma_regression.html">Asthma Regression</a>
+</li>
+<li>
+  <a href="cancer_regression.html">Cancer Regression</a>
 </li>
 <li>
   <a href="mailto:&lt;rh3064@cumc.columbia.edu&gt;">
@@ -347,15 +360,29 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">My awesome website</h1>
+<h1 class="title toc-ignore">Outgassing, Air Quality, &amp; Health
+Outcomes in Pennsylvania (1980-2020)</h1>
+<h3 class="subtitle">Vanessa Dinh (vd2407), Rahul Hosalli (rh3064),
+Armaan Sodhi (as6447), Mindy Tran (mnt2130)</h3>
 
 </div>
 
 
-<div id="this-is-jeffs-awesome-website" class="section level1">
-<h1>This is Jeff’s awesome website</h1>
-<p><img
-src="https://media.giphy.com/media/drXGoW1iudhKw/giphy.gif" /></p>
+<div id="summary-video" class="section level2">
+<h2>Summary Video</h2>
+</div>
+<div id="background" class="section level2">
+<h2>Background</h2>
+<p>Background on project</p>
+</div>
+<div id="data" class="section level2">
+<h2>Data</h2>
+</div>
+<div id="site-guide" class="section level2">
+<h2>Site Guide</h2>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
 </div>
 
 

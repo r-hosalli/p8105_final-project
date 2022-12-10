@@ -18,6 +18,7 @@ library(plotly)
 health_outcomes = 
   read_csv("./data/PLACES_County_2022.csv") %>% 
   janitor::clean_names() %>% 
+  filter(state_abbr == "PA") %>% 
   select(-state_abbr, -state_desc) %>% 
   rename(county = county_name) %>% 
   mutate(
