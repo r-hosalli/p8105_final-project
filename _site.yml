@@ -2,7 +2,7 @@ name: "Pennyslvania "
 output_dir: "."
 navbar:
   title: "Home"
-  right:
+ left:
     - text: "Exploratory Analyses"
       menu:
         - text: "Superfund Sites"
@@ -18,7 +18,9 @@ navbar:
           href: Cancer_regression.html
     - text: "Interactive Maps"
     - icon: fa-envelope fa-lg
-      href: mailto:<rh3064@cumc.columbia.edu>
+  right:
+    - text: "Report"
+      href: Report.html
     - icon: fa-github fa-lg
       href: https://github.com/r-hosalli/p8105_final-project
 output:
