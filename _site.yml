@@ -3,16 +3,24 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
-    - text: "Exploratory Analysis"
+    - text: "Exploratory Analyses"
+      menu:
+        - text: "Superfund Sites"
+          href: Superfund_Exploratory_Analysis.html
+        - text: "Health Outcomes"
+          href: Health_Outcomes_Exploratory_Analysis.html
       href: Exploratory_Analysis.html
-    - text: "Asthma Regression"
-      href: asthma_regression.html
-    - text: "Cancer Regression"
-      href: cancer_regression.html
+    - text: "Regression Analyses"
+      menu:
+        - text: "Asthma Regression"
+          href: asthma_regression.html
+        - text: "Cancer Regression"
+          href: Cancer_regression.html
+    - text: "Interactive Maps"
     - icon: fa-envelope fa-lg
       href: mailto:<rh3064@cumc.columbia.edu>
     - icon: fa-github fa-lg
-      href: http://github.com/r-hosalli/
+      href: https://github.com/r-hosalli/p8105_final-project
 output:
   html_document:
     theme: sandstone
