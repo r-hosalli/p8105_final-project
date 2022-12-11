@@ -16,6 +16,7 @@ navbar:
         - text: "Cancer Regression"
           href: Cancer_regression.html
     - text: "Interactive Maps"
+      href: https://r-hosalli.shinyapps.io/shiny/
     - text: "Report"
       href: Report.html
     - icon: fa-github fa-lg
