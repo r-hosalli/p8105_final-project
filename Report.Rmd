@@ -47,13 +47,11 @@ scale_fill_discrete = scale_fill_viridis_d
 suppressPackageStartupMessages(library(sf))
 ```
 
-
-```{html, message = FALSE, warning = FALSE}
 <style type="text/css">
 </style>
-```
 
 
+&nbsp;
 
 # Motivation
 
@@ -65,12 +63,16 @@ Superfund sites are areas designated by the EPA that are contaminated with hazar
 
 -   "The presence of Superfund sites as a determinant of life expectancy in the United States" from Nature Communications- [Link](https://www.nature.com/articles/s41467-021-22249-2)
 
+&nbsp;
+
 ## Initial Questions
 
 1.  Does living in a county with a Superfund increase risk for cancer?
 2.  Does living in a county with a Superfund increase risk for asthma?
 3.  Does county level Superfund site score affect both cancer and asthma outcomes?
 4.  What is the geographic spread of Superfund sites in Pennsylvania?
+
+&nbsp;
 
 # Data
 
@@ -120,6 +122,8 @@ This dataset was used as a shapefile for Pennsylvania state and its counties
 -   `shape_area`
 -   `geometry`
 
+&nbsp;
+
 ### Data Cleaning
 
 The CDC PLACES and EPA NPL datasets were cleaned in a similar fashion. Both datasets were in CSV format and imported into R. The variables names were all cleaned, then the variables of interest were selected and renamed if they were not intuitive to the user. Since the CDC dataset was nationwide, we computed the national average prevalence for cancer and asthma,to compare to the prevalence in Pennsylvania state. Then, we filtered the dataset to only include values for Pennsylvania state. Although the EPA NPL website included a dataset for superfund sites nationwide, we used the website to isolate to only include sites in Pennsylvania.
@@ -129,12 +133,17 @@ For the exploratory analyses, the two datasets were then joined by `county` and 
 
 All datasets were available as either a CSV file or a shapefile, so no data scraping was necessary for our analysis. Each dataset was cleaned to focus on our variables of interest within Pennsylvania.
 
+&nbsp;
 
 # Exploratory Analysis
+
+&nbsp;
 
 ### *EPA National Priorities List (NPL) Data*
 
 The exploratory analysis for the EPA NPL dataset was used to give context to the number of Superfund sites in PA, the mean site score, and where they were located geographically.
+
+&nbsp;
 
 #### **Number of Superfunds by County**
 
@@ -171,6 +180,8 @@ aes(x = reorder(county, -n_superfund), y = n_superfund, color = county, fill = c
 ggplotly(superfund_count)
 ```
 
+&nbsp;
+
 #### **County Level Mean Superfund Site Score** 
 
 The EPA utilizes a Hazard Ranking System (HRS) to determine the site score, which is used to place sites on the National Priorities List (NPL). The NPL is a list of hazardous waste sites in the US that are eligible for long-term clean-up financed under the federal Superfund program. For a site to be on the NPL, the site must have a score greater than 28.5 on a scale of 0 to 100 where the site is judged upon the likelihood that it has released or has the potential to release hazardous waste into the environment, toxicity of the waste, and the people or environments that are affected by the waste. A higher score indicates higher risk of waste release. This table provides the average site score among all sites in Pennsylvania as well as the lowest and highest site scores.
@@ -204,11 +215,13 @@ superfund_stat =
 superfund_stat
 ```
 
+&nbsp;
+
 #### **Location of Superfunds in PA** 
 
 We wanted to explore the location of the Superfund sites to determine whether they were randomly distributed or clustered in certain areas in the state of PA. From the plots below, we can see that a majority of the Superfunds are located in the Southeastern portion of Pennsylvania and the ones with the highest site scores are also located in that region.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, results = FALSE}
 
 pa_county =
   st_read("./data/PaCounty2022_11.shp") %>% 
@@ -310,6 +323,8 @@ superfund_geo =
 ggplotly(superfund_geo)
 ```
 
+&nbsp;
+
 ### *CDC PLACES Data*
 
 #### **Asthma and Cancer Prevalence at the County Level**
@@ -385,6 +400,8 @@ ggplotly(cancer_plot)
 ```
 
 \*\* Red Line: national cancer prevalence calculated from CDC dataset with all states.
+
+&nbsp;
 
 #### **Assessment of Linear Relationship between Cancer and Asthma Outcomes with Other Health Outcomes**
 
@@ -566,6 +583,8 @@ cancer_predict_panel +
   plot_layout(guides = "collect")
 ```
 
+&nbsp;
+
 #### **Comparison of Health Outcomes for Counties With and Without Superfund Sites** 
 
 We also wanted to explore if cancer outcomes and asthma outcomes were different based on whether a county had a Superfund in their county lines. Based on the plot below, it seems like the the median values for cancer, asthma, and healthcare access are similar among counties with Superfund sites and counties without Superfund sites in their jurisdiction.
@@ -606,6 +625,8 @@ asthma_superfund =
 
 asthma_superfund 
 ```
+
+&nbsp;
 
 # Regression Analysis
 
