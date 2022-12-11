@@ -56,6 +56,7 @@ suppressPackageStartupMessages(library(sf))
 # Motivation
 
 Superfund sites are areas designated by the EPA that are contaminated with hazardous or toxic substances and have potential to release these substances into the environment, adversely affecting human health. The motivation of this project is to evaluate the health effects of living in proximity to a Superfund site, as [1 in 6 Americans](https://housingmatters.urban.org/articles/millions-americans-live-near-toxic-waste-sites-how-does-affect-their-health) currently live near a Superfund site. In particular, we are interested in the effects residing near a Superfund site on asthma and cancer outcomes, since risk for those two diseases can be influenced by environmental exposures.
+ 
 
 ## Related Motivating Sources
 
@@ -618,7 +619,7 @@ asthma_superfund =
   layout(boxmode = "group") %>% 
   layout(
     xaxis = list(title = "Presence of Superfund in County"),
-   title = "Comparison of County Level Cancer, Asthma Prevalence, and Lack of Health Insurance By Superfund Presence",
+   title = "Prevalence of Health Metrics By Superfund Presence",
    yaxis = list(title = "Crude Prevalence")) 
 
 asthma_superfund 

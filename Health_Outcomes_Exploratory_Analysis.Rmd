@@ -353,7 +353,7 @@ asthma_superfund =
   layout(boxmode = "group") %>% 
   layout(
     xaxis = list(title = "Presence of Superfund in County"),
-   title = "Prevalence of Cancer, Asthma, and Lack of Health Insurance By Superfund Presence",
+   title = "Prevalence of Health Metrics By Superfund Presence",
    yaxis = list(title = "Crude Prevalence")) 
 
 asthma_superfund 
