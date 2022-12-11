@@ -28,6 +28,7 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
+```{=html}
 <style type="text/css">
 
 h1.title {
@@ -35,14 +36,15 @@ h1.title {
 }
 
 </style>
+```
+ 
 
-&nbsp;
+The main health outcomes of interest are asthma and cancer, since we hypothesize that residents who live in counties with Superfund sites are more likely to be exposed to hazardous waste which will increase their risk of cancer and asthma. Other variables we are interested in exploring are lack of health insurance, smoking, and depression along with the mean site score of the Superfunds in each county.
 
-The main health outcomes of interest are asthma and cancer, since we hypothesize that residents who live in counties with Superfund sites are more likely to be exposed to hazardous waste which will increase their risk of cancer and asthma. Other variables we are interested in exploring are lack of health insurance, smoking, and depression along with the mean site score of the Superfunds in each county. 
+Primarily, we are interested in seeing if living in a county with high average Superfund site score would correlate with asthma or cancer prevalence.
 
-Primarily, we are interested in seeing if living in a county with high average Superfund site score would correlate with asthma or cancer prevalence. 
+ 
 
-&nbsp;
 ```{r plot 4, message=FALSE, warning=FALSE}
 #Data Cleaning to Extract 95% CIs 
 health_outcomes = 
@@ -86,10 +88,10 @@ aes(x = reorder(county,-casthma_crude_prev), y = casthma_crude_prev, color = cou
 ggplotly(asthma_plot)
 
 ```
-** Red Line: national asthma prevalence calculated from national dataset with all states.
 
-The prevalence for asthma in the majority of Pennsylvania counties are above the calculated national average (9.7%). The county with the highest prevalence of asthma is Philadelphia County, while the county with the lowest is Montgomery County. 
-&nbsp;
+\*\* Red Line: national asthma prevalence calculated from national dataset with all states.
+
+The prevalence for asthma in the majority of Pennsylvania counties are above the calculated national average (9.7%). The county with the highest prevalence of asthma is Philadelphia County, while the county with the lowest is Montgomery County.  
 
 ```{r plot 5, message=FALSE, warning=FALSE}
 
@@ -112,11 +114,12 @@ aes(x = reorder(county,-cancer_crude_prev), y = cancer_crude_prev, color = count
 
 ggplotly(cancer_plot)
 ```
-** Red Line: national cancer prevalence calculated from CDC dataset with all states.
 
-Again, from the plot above, the prevalence for cancer in the majority of Pennsylvania counties are above the calculated national average (5.6%). The county with the highest prevalence of cancer is Cameron County (9.5%), while the county with the lowest is Philadelphia County (5.5%). 
+\*\* Red Line: national cancer prevalence calculated from CDC dataset with all states.
 
-&nbsp;
+Again, from the plot above, the prevalence for cancer in the majority of Pennsylvania counties are above the calculated national average (5.6%). The county with the highest prevalence of cancer is Cameron County (9.5%), while the county with the lowest is Philadelphia County (5.5%).
+
+ 
 
 ```{r plot 6, message=FALSE, warning=FALSE}
 
@@ -225,9 +228,10 @@ asthma_predict_panel +
   ) + 
   plot_layout(guides = "collect")
 ```
-&nbsp;
 
-From these four scatter plots with best fit lines grouped by asthma as the dependent variable, smoking prevalence, depression prevalence, and lack of insurance, all have a positive relationship with asthma prevalence on the county level. Mean Superfund site score seems to be more randomly distributed, with a slight downward trend that is likely influenced by the one outlier. 
+ 
+
+From these four scatter plots with best fit lines grouped by asthma as the dependent variable, smoking prevalence, depression prevalence, and lack of insurance, all have a positive relationship with asthma prevalence on the county level. Mean Superfund site score seems to be more randomly distributed, with a slight downward trend that is likely influenced by the one outlier.
 
 ```{r plot 7, message=FALSE, warning=FALSE}
 Cancer_Smoking =
@@ -295,8 +299,7 @@ cancer_predict_panel +
   plot_layout(guides = "collect")
 ```
 
-For Cancer Prevalence as the outcome, smoking and depression have a slight positive correlation with ashtma prevalence on the county level. On the other hand, lack of insurance and mean superfund site score seem to have a more random distribution with cancer. The best fit line for these two outcomes show a slight negative correlation but it is likely influenced by the outliers.  
-
+For Cancer Prevalence as the outcome, smoking and depression have a slight positive correlation with ashtma prevalence on the county level. On the other hand, lack of insurance and mean superfund site score seem to have a more random distribution with cancer. The best fit line for these two outcomes show a slight negative correlation but it is likely influenced by the outliers.
 
 ```{r plot 8, message=FALSE, warning=FALSE}
 Access_Score =
@@ -314,10 +317,10 @@ Access_Score =
   ggtitle("Association Between Mean Site Score and Lack of Insurance Prevalence")
 Access_Score
 ```
-&nbsp;
+
+ 
 
 There appears to be very low correlation between lack of health insurance and mean county Superfund site core at the county level.
-
 
 ```{r plot 9, message=FALSE, warning=FALSE}
 no_superfund = 
@@ -356,4 +359,4 @@ asthma_superfund =
 asthma_superfund 
 ```
 
-Counties that have Superfund sites located in their counties compared to counties that did not have any Superfund sites in their counties appeared to have similar median prevalence values across all three variables of asthma, cancer, and lack of health insurance prevalence. Counties with Superfund sites do have a larger range for their prevalence of lack of health insurance. 
+Counties that have Superfund sites located in their counties compared to counties that did not have any Superfund sites in their counties appeared to have similar median prevalence values across all three variables of asthma, cancer, and lack of health insurance prevalence. Counties with Superfund sites do have a larger range for their prevalence of lack of health insurance.
