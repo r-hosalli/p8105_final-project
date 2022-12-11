@@ -225,6 +225,8 @@ asthma_predict_panel +
   ) + 
   plot_layout(guides = "collect")
 ```
+&nbsp;
+
 From these four scatter plots with best fit lines grouped by asthma as the dependent variable, smoking prevalence, depression prevalence, and lack of insurance, all have a positive relationship with asthma prevalence on the county level. Mean Superfund site score seems to be more randomly distributed, with a slight downward trend that is likely influenced by the one outlier. 
 
 ```{r plot 7, message=FALSE, warning=FALSE}
@@ -312,9 +314,10 @@ Access_Score =
   ggtitle("Association Between Mean Site Score and Lack of Insurance Prevalence")
 Access_Score
 ```
+&nbsp;
+
 There appears to be very low correlation between lack of health insurance and mean county Superfund site core at the county level.
 
-&nbsp;
 
 ```{r plot 9, message=FALSE, warning=FALSE}
 no_superfund = 
