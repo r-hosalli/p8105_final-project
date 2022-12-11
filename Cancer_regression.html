@@ -13,7 +13,7 @@
 
 <title>Cancer Regression</title>
 
-<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,9 +193,16 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "\e258";
-  font-family: 'Glyphicons Halflings';
+  content: "&#xe258;";
   border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -391,14 +398,82 @@ div.tocify {
 </div>
 
 
+<pre class="r"><code>health_outcomes = 
+  read_csv(&quot;./data/PLACES_County_2022.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  rename(county = county_name, state = state_abbr) %&gt;% 
+  mutate(
+    county = as.factor(county)
+  ) %&gt;% 
+  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci,access2_crude_prev,depression_crude_prev,csmoking_crude_prev,total_population) %&gt;% 
+  filter(state == &quot;PA&quot;) %&gt;%
+  mutate(asthma_ci = str_remove_all(casthma_crude95ci, &#39;[()]&#39;),
+         cancer_ci = str_remove_all(cancer_crude95ci, &#39;[()]&#39;)) %&gt;%
+  select(-casthma_crude95ci,-cancer_crude95ci) %&gt;%
+  separate(asthma_ci, into = c(&quot;asthma_lower&quot;, &quot;asthma_upper&quot;), sep = &quot;,&quot;) %&gt;%
+   separate(cancer_ci, into = c(&quot;cancer_lower&quot;, &quot;cancer_upper&quot;), sep = &quot;,&quot;) %&gt;%
+  mutate(
+    asthma_lower = as.numeric(asthma_lower),
+    asthma_upper = as.numeric(asthma_upper),
+    cancer_lower = as.numeric(cancer_lower),
+    cancer_upper = as.numeric(cancer_upper)
+  )</code></pre>
+<pre><code>## Rows: 3143 Columns: 126
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (65): StateAbbr, StateDesc, CountyName, CountyFIPS, ACCESS2_Crude95CI, A...
+## dbl (61): TotalPopulation, ACCESS2_CrudePrev, ACCESS2_AdjPrev, ARTHRITIS_Cru...
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>superfund_sites =
+  read_csv(&quot;./data/superfund_NPL_sites.csv&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with(&quot;notice&quot;), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date,-x,-y,-state) %&gt;% 
+  filter(status == &quot;NPL Site&quot;)</code></pre>
+<pre><code>## Rows: 126 Columns: 27
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (18): Site Name, Site EPA ID, State, City, County, Status, Proposed Date...
+## dbl  (8): Site Score, SEMS ID, Region ID, Latitude, Longitude, Construction ...
+## lgl  (1): Restoration FR Notice Jumper Page
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>superfund_by_county =
+  superfund_sites %&gt;% 
+  group_by(county) %&gt;% 
+  summarize(n_superfund = n()) %&gt;% 
+  mutate(
+    county = as.factor(county)) %&gt;%
+  as.data.frame(superfund_by_county)
+combined_data_1 =
+  left_join(health_outcomes, superfund_sites, by = &quot;county&quot;) 
+
+combined_data_final=left_join(combined_data_1, superfund_by_county, by = &quot;county&quot;)%&gt;% 
+  mutate_at(vars(&quot;n_superfund&quot;), ~replace(., is.na(.), 0))
+
+combined_data_final=
+  combined_data_final%&gt;%
+  mutate(
+          site_score =  replace(site_score, is.na(site_score), 0),
+          site_name = replace(site_name, is.na(site_name), &quot;None&quot;),
+          superfund_site = if_else(n_superfund == &#39;0&#39;,0, 1),
+          cancer_population = round((cancer_crude_prev/100)*total_population),
+          asthma_population = round((casthma_crude_prev/100)*total_population),
+          smoking_population = round((csmoking_crude_prev/100)*total_population),
+          depression_population = round((depression_crude_prev/100)*total_population),
+          insurance_population = round((access2_crude_prev/100)*total_population),
+          cancer_compared_national_average=if_else(cancer_crude_prev&gt;&#39;6.5&#39;, 1,0)
+          )</code></pre>
 <div id="outcome-cancer-prevalence" class="section level2">
 <h2>Outcome: Cancer Prevalence</h2>
 <p>The data provided is at the state-level, however it was converted to
 county-level for the purpose of this model. We were originally given the
 The outcome of interest is the number of individuals with cancer in a 1
-year period by county differed by county.As this was count data, Poisson
-Regression with a log link function was utilized.No offset term was
-utilized in the data as count data is modeled.</p>
+year period by county differed by county. As this was count data,
+Poisson Regression with a log link function was utilized. No offset term
+was utilized in the data as count data is modeled.</p>
 </div>
 <div id="crude-model" class="section level1">
 <h1>Crude Model</h1>
@@ -408,7 +483,7 @@ higher cancer counts Upon running the Poisson regression model with a
 log link function, we found increased cancer prevalence, with the
 greatest occurring among Allegheny county (RR: 10.759, 95% CI (10.636,
 10.883)).</p>
-<pre class="r"><code>  combined_data_final %&gt;% 
+<pre class="r"><code>combined_data_final %&gt;% 
   glm(cancer_population ~ county, data = .,family = poisson(link = &#39;log&#39;))%&gt;%
   broom::tidy()%&gt;%
   mutate(
@@ -836,9 +911,8 @@ greatest occurring among Allegheny county (RR: 10.759, 95% CI (10.636,
 </tbody>
 </table>
 </div>
-<div id="confounder-selection-analyze-these-values"
-class="section level1">
-<h1>Confounder Selection: Analyze these values:</h1>
+<div id="confounder-selection" class="section level1">
+<h1>Confounder Selection:</h1>
 <p>We hypothesized this was a function of population size in urban
 cities. We also believed that the cancer counts may have had to do with
 potentially more toxic superfund sites. Finally, we were interested in
@@ -878,7 +952,7 @@ was impacting this relationship.</p>
 </tr>
 </tbody>
 </table>
-<p><code>superfund site score</code></p>
+<p><code>Superfund Site Score</code></p>
 <pre class="r"><code>combined_data_final %&gt;% 
   glm(cancer_population ~site_score, data = .,family = poisson(link=&#39;log&#39;))%&gt;%
   broom::tidy()%&gt;% 
@@ -942,7 +1016,7 @@ was impacting this relationship.</p>
 </tr>
 </tbody>
 </table>
-<p><code>Insurance_Status</code>,</p>
+<p><code>Insurance Status</code>,</p>
 <pre class="r"><code>  combined_data_final %&gt;% 
   glm(cancer_population ~ insurance_population, data = .,family = poisson(link=&#39;log&#39;))%&gt;%
   broom::tidy()%&gt;% 
@@ -1019,7 +1093,7 @@ impact our measurement of cancer by county. What makes this fascinating
 is that Fayette County does not have a superfund site, furthering
 evidence that cancer counts may be due to outside factors not originally
 in our study.</p>
-<pre class="r"><code>  combined_data_final %&gt;% 
+<pre class="r"><code>combined_data_final %&gt;% 
   glm(cancer_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = &#39;log&#39;))%&gt;%
   broom::tidy()%&gt;%
   mutate(
@@ -1553,7 +1627,7 @@ in our study.</p>
 <h1>Model Fit</h1>
 <p>We opted to investigate model fit through analyzing over dispersion.
 We did not find over dispersion to be an issue in our estimate.</p>
-<pre class="r"><code>  combined_data_final%&gt;% 
+<pre class="r"><code>combined_data_final%&gt;% 
   glm(cancer_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = &#39;log&#39;))%&gt;%
   dispersiontest(trafo = 1) %&gt;% 
   broom::tidy() %&gt;% 
