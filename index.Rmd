@@ -35,7 +35,7 @@ The motivation for this website stems from the fact that Superfund sites are are
 
 ## Website Overview
 
-Data for this website was acquired from the CDC and EPA specifically for Superfund site location and health outcomes. 
+Data for this website was acquired from the CDC and EPA specifically for Superfund site locations and health outcomes. 
 
 **In the Exploratory Analysis tab, you will be able to access:**
 <ul>
