@@ -55,8 +55,7 @@ suppressPackageStartupMessages(library(sf))
 
 # Motivation
 
-Superfund sites are areas designated by the EPA that are contaminated with hazardous or toxic substances and have potential to release these substances into the environment, adversely affecting human health. The motivation of this project is to evaluate the health effects of living in proximity to a Superfund site, as [1 in 6 Americans](https://housingmatters.urban.org/articles/millions-americans-live-near-toxic-waste-sites-how-does-affect-their-health) currently live near a Superfund site. In particular, we are interested in the effects residing near a Superfund site on asthma and cancer outcomes, since risk for those two diseases can be influenced by environmental exposures.
- 
+Superfund sites are areas designated by the EPA that are contaminated with hazardous or toxic substances and have potential to release these substances into the environment, adversely affecting human health. The motivation of this project is to evaluate the health effects of living in proximity to a Superfund site, as [1 in 6 Americans](https://housingmatters.urban.org/articles/millions-americans-live-near-toxic-waste-sites-how-does-affect-their-health) currently live near a Superfund site. In particular, we are interested in the effects residing near a Superfund site on asthma and cancer outcomes, since risk for those two diseases can be influenced by environmental exposures.  
 
 ## Related Motivating Sources
 
@@ -906,9 +905,9 @@ combined_data_final%>%
 
 # Interactive Maps (Shiny)
 
-The interactive maps were produced using the `leaflet` package, and utilized the combined health outcome and PA county-level geographic dataset produced in the data cleaning step, alongside the superfund site geographic data. A helper function for creating the 'labels', i.e. the fill intensities of the counties determined by asthma or cancer prevalence. On hover the maps show the county name, number of superfund sites, mean site score and prevalence for that county. Superfund sites are indicated with markers that show the name of the site on hover. The base map is from OpenStreetMap.
+The interactive maps were produced using the `leaflet` package, and utilized the combined health outcome and PA county-level geographic dataset produced in the data cleaning step, alongside the superfund site geographic data. A helper function was made for creating the 'labels', i.e. the fill intensities of the counties determined by asthma or cancer prevalence. On hover the maps show the county name, number of superfund sites, mean site score and prevalence for that county. Superfund sites are indicated with markers that show the name of the site on hover. The base map is from OpenStreetMap.
 
-&nbsp;
+ 
 
 # Discussion
 
