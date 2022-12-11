@@ -417,30 +417,14 @@ div.tocify {
     asthma_upper = as.numeric(asthma_upper),
     cancer_lower = as.numeric(cancer_lower),
     cancer_upper = as.numeric(cancer_upper)
-  )</code></pre>
-<pre><code>## Rows: 3143 Columns: 126
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (65): StateAbbr, StateDesc, CountyName, CountyFIPS, ACCESS2_Crude95CI, A...
-## dbl (61): TotalPopulation, ACCESS2_CrudePrev, ACCESS2_AdjPrev, ARTHRITIS_Cru...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>superfund_sites =
+  )
+superfund_sites =
   read_csv(&quot;./data/superfund_NPL_sites.csv&quot;) %&gt;% 
   janitor::clean_names() %&gt;% 
   select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with(&quot;notice&quot;), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date,-x,-y,-state) %&gt;% 
-  filter(status == &quot;NPL Site&quot;)</code></pre>
-<pre><code>## Rows: 126 Columns: 27
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (18): Site Name, Site EPA ID, State, City, County, Status, Proposed Date...
-## dbl  (8): Site Score, SEMS ID, Region ID, Latitude, Longitude, Construction ...
-## lgl  (1): Restoration FR Notice Jumper Page
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>superfund_by_county =
+  filter(status == &quot;NPL Site&quot;)
+
+superfund_by_county =
   superfund_sites %&gt;% 
   group_by(county) %&gt;% 
   summarize(n_superfund = n()) %&gt;% 
