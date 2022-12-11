@@ -7,7 +7,7 @@ output:
     toc_float: true
 ---
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, show_col_types = FALSE, message =FALSE, error =FALSE}
 library(tidyverse)
 library(modelr)
 library(mgcv)
@@ -42,7 +42,7 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
-```{r}
+```{r, show_col_types = FALSE, message =FALSE, error =FALSE}
 health_outcomes = 
   read_csv("./data/PLACES_County_2022.csv") %>% 
   janitor::clean_names() %>% 

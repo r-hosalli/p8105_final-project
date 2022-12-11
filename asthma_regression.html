@@ -13,7 +13,7 @@
 
 <title>Asthma Regression</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -334,23 +327,42 @@ div.tocify {
         
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="Exploratory_Analysis.html">Exploratory Analysis</a>
-</li>
-<li>
-  <a href="asthma_regression.html">Asthma Regression</a>
-</li>
-<li>
-  <a href="cancer_regression.html">Cancer Regression</a>
-</li>
-<li>
-  <a href="mailto:&lt;rh3064@cumc.columbia.edu&gt;">
-    <span class="fa fa-envelope fa-lg"></span>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Exploratory Analyses
      
+    <span class="caret"></span>
   </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Superfund_Exploratory_Analysis.html">Superfund Sites</a>
+    </li>
+    <li>
+      <a href="Health_Outcomes_Exploratory_Analysis.html">Health Outcomes</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Regression Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="asthma_regression.html">Asthma Regression</a>
+    </li>
+    <li>
+      <a href="Cancer_regression.html">Cancer Regression</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown-header">Interactive Maps</li>
+<li>
+  <a href="Report.html">Report</a>
 </li>
 <li>
-  <a href="http://github.com/r-hosalli/">
+  <a href="https://github.com/r-hosalli/p8105_final-project">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -377,95 +389,6 @@ div.tocify {
 </div>
 
 
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.3.6     ✔ purrr   0.3.4
-## ✔ tibble  3.1.8     ✔ dplyr   1.0.9
-## ✔ tidyr   1.2.0     ✔ stringr 1.4.1
-## ✔ readr   2.1.2     ✔ forcats 0.5.2
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## Loading required package: nlme
-## 
-## 
-## Attaching package: &#39;nlme&#39;
-## 
-## 
-## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     collapse
-## 
-## 
-## This is mgcv 1.8-40. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.
-## 
-## 
-## Attaching package: &#39;lubridate&#39;
-## 
-## 
-## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre><code>## Warning: package &#39;splitstackshape&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## Warning: package &#39;naniar&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;broom&#39;
-## 
-## The following object is masked from &#39;package:modelr&#39;:
-## 
-##     bootstrap</code></pre>
-<pre><code>## Warning: package &#39;AER&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## Loading required package: car</code></pre>
-<pre><code>## Warning: package &#39;car&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## Loading required package: carData</code></pre>
-<pre><code>## Warning: package &#39;carData&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;car&#39;
-## 
-## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     recode
-## 
-## The following object is masked from &#39;package:purrr&#39;:
-## 
-##     some
-## 
-## Loading required package: lmtest</code></pre>
-<pre><code>## Warning: package &#39;lmtest&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## Loading required package: zoo</code></pre>
-<pre><code>## Warning: package &#39;zoo&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;zoo&#39;
-## 
-## The following objects are masked from &#39;package:base&#39;:
-## 
-##     as.Date, as.Date.numeric
-## 
-## Loading required package: sandwich</code></pre>
-<pre><code>## Warning: package &#39;sandwich&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## Loading required package: survival</code></pre>
-<pre><code>## Warning: package &#39;lme4&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## Loading required package: Matrix</code></pre>
-<pre><code>## Warning: package &#39;Matrix&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;Matrix&#39;
-## 
-## The following objects are masked from &#39;package:tidyr&#39;:
-## 
-##     expand, pack, unpack
-## 
-## 
-## Attaching package: &#39;lme4&#39;
-## 
-## The following object is masked from &#39;package:nlme&#39;:
-## 
-##     lmList</code></pre>
-<pre><code>## Warning: package &#39;optimx&#39; was built under R version 4.2.2</code></pre>
-<pre><code>## 
-## Attaching package: &#39;optimx&#39;
-## 
-## The following object is masked from &#39;package:nlme&#39;:
-## 
-##     coef&lt;-</code></pre>
 <pre class="r"><code>health_outcomes = 
   read_csv(&quot;./data/PLACES_County_2022.csv&quot;) %&gt;% 
   janitor::clean_names() %&gt;% 
@@ -485,30 +408,14 @@ div.tocify {
     asthma_upper = as.numeric(asthma_upper),
     cancer_lower = as.numeric(cancer_lower),
     cancer_upper = as.numeric(cancer_upper)
-  )</code></pre>
-<pre><code>## Rows: 3143 Columns: 126
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (65): StateAbbr, StateDesc, CountyName, CountyFIPS, ACCESS2_Crude95CI, A...
-## dbl (61): TotalPopulation, ACCESS2_CrudePrev, ACCESS2_AdjPrev, ARTHRITIS_Cru...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>superfund_sites =
+  )
+superfund_sites =
   read_csv(&quot;./data/superfund_NPL_sites.csv&quot;) %&gt;% 
   janitor::clean_names() %&gt;% 
   select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with(&quot;notice&quot;), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date,-x,-y,-state) %&gt;% 
-  filter(status == &quot;NPL Site&quot;)</code></pre>
-<pre><code>## Rows: 126 Columns: 27
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (18): Site Name, Site EPA ID, State, City, County, Status, Proposed Date...
-## dbl  (8): Site Score, SEMS ID, Region ID, Latitude, Longitude, Construction ...
-## lgl  (1): Restoration FR Notice Jumper Page
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>superfund_by_county =
+  filter(status == &quot;NPL Site&quot;)
+
+superfund_by_county =
   superfund_sites %&gt;% 
   group_by(county) %&gt;% 
   summarize(n_superfund = n()) %&gt;% 

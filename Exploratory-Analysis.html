@@ -13,7 +13,7 @@
 
 <title>Exploratory-Analysis</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
@@ -178,8 +178,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -187,16 +187,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -252,23 +245,42 @@ $(document).ready(function () {
         
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="Exploratory_Analysis.html">Exploratory Analysis</a>
-</li>
-<li>
-  <a href="asthma_regression.html">Asthma Regression</a>
-</li>
-<li>
-  <a href="cancer_regression.html">Cancer Regression</a>
-</li>
-<li>
-  <a href="mailto:&lt;rh3064@cumc.columbia.edu&gt;">
-    <span class="fa fa-envelope fa-lg"></span>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Exploratory Analyses
      
+    <span class="caret"></span>
   </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Superfund_Exploratory_Analysis.html">Superfund Sites</a>
+    </li>
+    <li>
+      <a href="Health_Outcomes_Exploratory_Analysis.html">Health Outcomes</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Regression Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="asthma_regression.html">Asthma Regression</a>
+    </li>
+    <li>
+      <a href="Cancer_regression.html">Cancer Regression</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown-header">Interactive Maps</li>
+<li>
+  <a href="Report.html">Report</a>
 </li>
 <li>
-  <a href="http://github.com/r-hosalli/">
+  <a href="https://github.com/r-hosalli/p8105_final-project">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
