@@ -13,7 +13,7 @@
 
 <title>Cancer Regression</title>
 
-<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
@@ -184,8 +184,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -193,16 +193,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -334,23 +327,42 @@ div.tocify {
         
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="Exploratory_Analysis.html">Exploratory Analysis</a>
-</li>
-<li>
-  <a href="asthma_regression.html">Asthma Regression</a>
-</li>
-<li>
-  <a href="cancer_regression.html">Cancer Regression</a>
-</li>
-<li>
-  <a href="mailto:&lt;rh3064@cumc.columbia.edu&gt;">
-    <span class="fa fa-envelope fa-lg"></span>
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Exploratory Analyses
      
+    <span class="caret"></span>
   </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Superfund_Exploratory_Analysis.html">Superfund Sites</a>
+    </li>
+    <li>
+      <a href="Health_Outcomes_Exploratory_Analysis.html">Health Outcomes</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Regression Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="asthma_regression.html">Asthma Regression</a>
+    </li>
+    <li>
+      <a href="Cancer_regression.html">Cancer Regression</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown-header">Interactive Maps</li>
+<li>
+  <a href="Report.html">Report</a>
 </li>
 <li>
-  <a href="http://github.com/r-hosalli/">
+  <a href="https://github.com/r-hosalli/p8105_final-project">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -377,74 +389,6 @@ div.tocify {
 </div>
 
 
-<pre class="r"><code>health_outcomes = 
-  read_csv(&quot;./data/PLACES_County_2022.csv&quot;) %&gt;% 
-  janitor::clean_names() %&gt;% 
-  rename(county = county_name, state = state_abbr) %&gt;% 
-  mutate(
-    county = as.factor(county)
-  ) %&gt;% 
-  select(state, county, casthma_crude_prev,casthma_crude95ci, cancer_crude_prev,cancer_crude95ci,access2_crude_prev,depression_crude_prev,csmoking_crude_prev,total_population) %&gt;% 
-  filter(state == &quot;PA&quot;) %&gt;%
-  mutate(asthma_ci = str_remove_all(casthma_crude95ci, &#39;[()]&#39;),
-         cancer_ci = str_remove_all(cancer_crude95ci, &#39;[()]&#39;)) %&gt;%
-  select(-casthma_crude95ci,-cancer_crude95ci) %&gt;%
-  separate(asthma_ci, into = c(&quot;asthma_lower&quot;, &quot;asthma_upper&quot;), sep = &quot;,&quot;) %&gt;%
-   separate(cancer_ci, into = c(&quot;cancer_lower&quot;, &quot;cancer_upper&quot;), sep = &quot;,&quot;) %&gt;%
-  mutate(
-    asthma_lower = as.numeric(asthma_lower),
-    asthma_upper = as.numeric(asthma_upper),
-    cancer_lower = as.numeric(cancer_lower),
-    cancer_upper = as.numeric(cancer_upper)
-  )</code></pre>
-<pre><code>## Rows: 3143 Columns: 126
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (65): StateAbbr, StateDesc, CountyName, CountyFIPS, ACCESS2_Crude95CI, A...
-## dbl (61): TotalPopulation, ACCESS2_CrudePrev, ACCESS2_AdjPrev, ARTHRITIS_Cru...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>superfund_sites =
-  read_csv(&quot;./data/superfund_NPL_sites.csv&quot;) %&gt;% 
-  janitor::clean_names() %&gt;% 
-  select(-region_id,-construction_completion_number, -site_listing_narrative, -site_progress_profile, -ends_with(&quot;notice&quot;), -restoration_fr_notice_jumper_page, -noid_date, -deletion_date,-x,-y,-state) %&gt;% 
-  filter(status == &quot;NPL Site&quot;)</code></pre>
-<pre><code>## Rows: 126 Columns: 27
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (18): Site Name, Site EPA ID, State, City, County, Status, Proposed Date...
-## dbl  (8): Site Score, SEMS ID, Region ID, Latitude, Longitude, Construction ...
-## lgl  (1): Restoration FR Notice Jumper Page
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>superfund_by_county =
-  superfund_sites %&gt;% 
-  group_by(county) %&gt;% 
-  summarize(n_superfund = n()) %&gt;% 
-  mutate(
-    county = as.factor(county)) %&gt;%
-  as.data.frame(superfund_by_county)
-combined_data_1 =
-  left_join(health_outcomes, superfund_sites, by = &quot;county&quot;) 
-
-combined_data_final=left_join(combined_data_1, superfund_by_county, by = &quot;county&quot;)%&gt;% 
-  mutate_at(vars(&quot;n_superfund&quot;), ~replace(., is.na(.), 0))
-
-combined_data_final=
-  combined_data_final%&gt;%
-  mutate(
-          site_score =  replace(site_score, is.na(site_score), 0),
-          site_name = replace(site_name, is.na(site_name), &quot;None&quot;),
-          superfund_site = if_else(n_superfund == &#39;0&#39;,0, 1),
-          cancer_population = round((cancer_crude_prev/100)*total_population),
-          asthma_population = round((casthma_crude_prev/100)*total_population),
-          smoking_population = round((csmoking_crude_prev/100)*total_population),
-          depression_population = round((depression_crude_prev/100)*total_population),
-          insurance_population = round((access2_crude_prev/100)*total_population),
-          cancer_compared_national_average=if_else(cancer_crude_prev&gt;&#39;6.5&#39;, 1,0)
-          )</code></pre>
 <div id="outcome-cancer-prevalence" class="section level2">
 <h2>Outcome: Cancer Prevalence</h2>
 <p>The data provided is at the state-level, however it was converted to
