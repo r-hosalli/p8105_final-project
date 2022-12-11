@@ -8,7 +8,7 @@ output:
 ---
 
 
-```{r, echo=FALSE, message= FALSE, error =FALSE}
+```{r, echo=FALSE}
 library(tidyverse)
 library(modelr)
 library(mgcv)
@@ -43,7 +43,7 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
-```{r, echo=FALSE, message= FALSE, error =FALSE}
+```{r}
 health_outcomes = 
   read_csv("./data/PLACES_County_2022.csv") %>% 
   janitor::clean_names() %>% 
@@ -100,14 +100,14 @@ combined_data_final=
 
 ## Outcome: Cancer Prevalence
 
-The data provided is at the state-level, however it was converted to county-level for the purpose of this model. We were originally given the The outcome of interest is the number of individuals with cancer in a 1 year period by county differed by county.As this was count data, Poisson Regression with a log link function was utilized.No offset term was utilized in the data as count data is modeled. 
+The data provided is at the state-level, however it was converted to county-level for the purpose of this model. We were originally given the The outcome of interest is the number of individuals with cancer in a 1 year period by county differed by county. As this was count data, Poisson Regression with a log link function was utilized. No offset term was utilized in the data as count data is modeled. 
 
 # Crude Model
 
 We evaluated the  cancer crude counts (total number of individuals who had cancer by county) with counties with larger urban centers having higher cancer counts Upon running the Poisson regression model with a log link function, we found increased cancer prevalence, with the greatest occurring among Allegheny county (RR: 10.759, 95% CI (10.636, 10.883)). 
 
 ```{r}
-  combined_data_final %>% 
+combined_data_final %>% 
   glm(cancer_population ~ county, data = .,family = poisson(link = 'log'))%>%
   broom::tidy()%>%
   mutate(
@@ -122,7 +122,7 @@ We evaluated the  cancer crude counts (total number of individuals who had cance
   knitr::kable(digits = 3)
 ```
 
-# Confounder Selection: Analyze these values: 
+# Confounder Selection:
 
 We hypothesized this was a function of population size in urban cities. We also believed that the cancer counts may have had to do with potentially more toxic superfund sites. Finally, we were interested in the potential for SES (ie access to insurance), behavoral factors like smoking, and health attributes like asthma could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
 
@@ -136,7 +136,7 @@ combined_data_final %>%
 ```
 
 
-`superfund site score`
+`Superfund Site Score`
 ```{r}
 combined_data_final %>% 
   glm(cancer_population ~site_score, data = .,family = poisson(link='log'))%>%
@@ -152,7 +152,7 @@ combined_data_final %>%
   knitr::kable(digits = 3)
 ```
 
-`Insurance_Status`, 
+`Insurance Status`, 
 ```{r}
   combined_data_final %>% 
   glm(cancer_population ~ insurance_population, data = .,family = poisson(link='log'))%>%
@@ -177,7 +177,7 @@ After adjustment for these factors we find that our confounding factors (includi
 
 
 ```{r}
-  combined_data_final %>% 
+combined_data_final %>% 
   glm(cancer_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = 'log'))%>%
   broom::tidy()%>%
   mutate(
@@ -197,7 +197,7 @@ After adjustment for these factors we find that our confounding factors (includi
 We opted to investigate model fit through analyzing over dispersion. We did not find over dispersion to be an issue in our estimate. 
 
 ```{r}
-  combined_data_final%>% 
+combined_data_final%>% 
   glm(cancer_population ~ total_population+insurance_population+depression_population+smoking_population+site_score*county, data = .,family = poisson(link = 'log'))%>%
   dispersiontest(trafo = 1) %>% 
   broom::tidy() %>% 

@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Analysis of Superfunds in Pennsylvania"
+title: "Exploratory Analysis of Superfund Sites in Pennsylvania"
 output: 
   html_document:
     code_folding: hide
@@ -144,7 +144,7 @@ superfund_geo =
     x = "Longitude",
     y = "Latitude"
   ) +
-  ggtitle("Location of Superunds with Site Score")
+  ggtitle("Location of Superfund Sites with Site Score")
 
 ggplotly(superfund_geo)
 ```

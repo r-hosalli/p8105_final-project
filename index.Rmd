@@ -1,5 +1,5 @@
 ---
-title: "SuperFund Sites and Health Outcomes in Pennsylvania"
+title: "Superfund Sites and Health Outcomes in Pennsylvania"
 subtitle: "Vanessa Dinh (vd2407), Rahul Hosalli (rh3064), Armaan Sodhi (as6447), Mindy Tran (mnt2130)"
 output: 
   html_document:
@@ -40,7 +40,7 @@ Data for this website was acquired from the CDC and EPA specifically for Superfu
 **In the Exploratory Analysis tab, you will be able to access:**
 <ul>
 <li>Analyses of the location, number, and site scores of Superfund sites in the state of Pennsylvania  </li>
-<li>Analyses of health outcomes for our main health outcomes (cancer & smoking) and our predictor variables (lack of health insurance, mean site score, smoking prevalence, and depression prevalence).</li>
+<li>Analyses of health outcomes for our main health outcomes (cancer & asthma) and our predictor variables (lack of health insurance, mean site score, smoking prevalence, and depression prevalence).</li>
 </ul>
 
 **In the Regression Analyses tab, you will find:**
@@ -49,7 +49,17 @@ Data for this website was acquired from the CDC and EPA specifically for Superfu
 <li>Poisson Regression Model with log link function investigating associations between asthma and cancer case count and county, while controlling for smoking prevalence, prevalence of lack of health insurance, depression prevalence, and the average Superfund site score by county.</li>
 </ul>
 
+**In the Interactive Maps tab, there are:**
+<ul>
 
+<li>Interactive maps depicting the prevalences of our main health outcomes (cancer & smoking) in relation to geographic locations of current NPL Superfund sites in Pennsylvania, mapped by county. </li>
+</ul>
+
+**In the Report tab, we have compiled:**
+<ul>
+
+<li>A complete report of the data, exploratory analyses, and regression analyses with code, tables, graphs, and other figures to investigate the association between location of Superfund sites and the main health outcomes of interest: asthma and cancer in Pennsylvania. </li>
+</ul>
 
 &nbsp;
 &nbsp;

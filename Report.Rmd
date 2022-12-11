@@ -709,7 +709,7 @@ We evaluated the cancer crude counts (total number of individuals who had cancer
   knitr::kable(digits = 3)
 ```
 
-#### *Confounder Selection: Analyze these values:*
+#### *Confounder Selection:*
 
 We hypothesized this was a function of population size in urban cities. We also believed that the cancer counts may have had to do with potentially more toxic superfund sites. Finally, we were interested in the potential for SES (ie access to insurance), behavioral factors like smoking, and health attributes like depression could potentially confound our study.Therefore, we opted to explore whether county population size was impacting this relationship.
 
@@ -850,7 +850,7 @@ combined_data_final %>%
   knitr::kable(digits = 3)
 ```
 
-`Insurance_Status`,
+`Insurance Status`,
 
 ```{r}
 combined_data_final %>% 
@@ -906,6 +906,8 @@ combined_data_final%>%
 # Interactive Maps (Shiny)
 
 The interactive maps were produced using the `leaflet` package, and utilized the combined health outcome and PA county-level geographic dataset produced in the data cleaning step, alongside the superfund site geographic data. A helper function for creating the 'labels', i.e. the fill intensities of the counties determined by asthma or cancer prevalence. On hover the maps show the county name, number of superfund sites, mean site score and prevalence for that county. Superfund sites are indicated with markers that show the name of the site on hover. The base map is from OpenStreetMap.
+
+&nbsp;
 
 # Discussion
 
